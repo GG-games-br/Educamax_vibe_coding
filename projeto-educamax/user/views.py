@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
-def index(request):
-    return HttpResponse('mabbals')
+def login(request):
+    return render(request, 'user/login.html')
