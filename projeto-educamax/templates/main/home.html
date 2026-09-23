@@ -1,14 +1,25 @@
-<!-- templates/main/home.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Educamax</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <h1>Bem-vindo ao Educamax</h1>
-    <p>O portal escolar da sua instituição.</p>
+    <header class="topbar">
+        <a href="/" class="brand">Educa<span>max</span></a>
+    </header>
 
-    <a href="{% url 'login' %}">Entrar</a>
+    <main class="hero">
+        <h1>Bem-vindo ao Educamax</h1>
+        <p>O portal escolar da sua instituição.</p>
+        <a href="{% url 'login' %}" class="btn">Entrar</a>
+    </main>
+
+    <footer class="footer">
+        &copy; Educamax
+    </footer>
 </body>
 </html>
