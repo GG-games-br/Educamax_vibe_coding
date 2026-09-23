@@ -1,27 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Tarefas{% endblock %}
+{% load static %}
+{% block title %}Tarefas · Educamax{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/tarefas.css' %}">{% endblock %}
+
 {% block content %}
-<h1>Tarefas</h1>
-
-{% if user.cargo == 'PROFESSOR' or user.cargo == 'ADMIN' %}
-    <a href="{% url 'tarefas:criar' %}">+ Nova tarefa</a>
-{% endif %}
-
-<ul>
-{% for tarefa in object_list %}
-    <li>
-        <strong>{{ tarefa.titulo }}</strong>
-        {% if tarefa.data_entrega %}(entrega: {{ tarefa.data_entrega|date:"d/m/Y" }}){% endif %}
-        <p>{{ tarefa.descricao }}</p>
-        <small>Por {{ tarefa.criado_por.username }}</small>
-
-        {% if tarefa.criado_por == user %}
-            <a href="{% url 'tarefas:editar' tarefa.pk %}">Editar</a>
-            <a href="{% url 'tarefas:excluir' tarefa.pk %}">Excluir</a>
+<main class="page">
+    <div class="page-header">
+        <h1>Tarefas</h1>
+        {% if user.cargo == 'PROFESSOR' or user.cargo == 'ADMIN' %}
+            <a href="{% url 'tarefas:criar' %}" class="btn">Nova tarefa</a>
         {% endif %}
-    </li>
-{% empty %}
-    <li>Nenhuma tarefa cadastrada.</li>
-{% endfor %}
-</ul>
+    </div>
+
+    <ul class="task-list">
+    {% for tarefa in object_list %}
+        <li class="task">
+            <h2 class="task-title">{{ tarefa.titulo }}</h2>
+            {% if tarefa.data_entrega %}
+                <span class="task-due">Entrega: {{ tarefa.data_entrega|date:"d/m/Y" }}</span>
+            {% endif %}
+            {% if tarefa.descricao %}
+                <p class="task-desc">{{ tarefa.descricao }}</p>
+            {% endif %}
+            <div class="task-footer">
+                <span>Por {{ tarefa.criado_por.username }}</span>
+                {% if tarefa.criado_por == user %}
+                <div class="task-actions">
+                    <a href="{% url 'tarefas:editar' tarefa.pk %}" class="btn btn-small btn-secondary">Editar</a>
+                    <a href="{% url 'tarefas:excluir' tarefa.pk %}" class="btn btn-small btn-secondary">Excluir</a>
+                </div>
+                {% endif %}
+            </div>
+        </li>
+    {% empty %}
+        <li class="empty">Nenhuma tarefa cadastrada.</li>
+    {% endfor %}
+    </ul>
+</main>
 {% endblock %}

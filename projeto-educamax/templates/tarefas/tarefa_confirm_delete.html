@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1>Excluir tarefa</h1>
-<p>Tem certeza que deseja excluir "{{ object.titulo }}"?</p>
+{% load static %}
+{% block title %}Excluir tarefa · Educamax{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/tarefas.css' %}">{% endblock %}
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Sim, excluir</button>
-    <a href="{% url 'tarefas:lista' %}">Cancelar</a>
-</form>
+{% block content %}
+<main class="page">
+    <div class="page-header">
+        <h1>Excluir tarefa</h1>
+    </div>
+
+    <div class="card">
+        <p class="warning">Tem certeza que deseja excluir "{{ object.titulo }}"? Essa ação não pode ser desfeita.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Sim, excluir</button>
+                <a href="{% url 'tarefas:lista' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</main>
 {% endblock %}

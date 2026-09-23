@@ -1,0 +1,136 @@
+/* static/css/main.css - Educamax landing page */
+
+:root {
+    --blue: #1d3f72;
+    --blue-dark: #142c52;
+    --amber: #f2b632;
+    --bg: #f5f7fb;
+    --text: #1c2536;
+    --muted: #5b667a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top bar */
+.topbar {
+    background: var(--blue);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.brand span {
+    color: var(--amber);
+}
+
+/* Main content */
+.hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1.5rem;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.15;
+    color: var(--blue-dark);
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 34rem;
+    margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.8rem 2.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--amber);
+    color: var(--blue-dark);
+    transition: background 0.15s;
+}
+
+.btn:hover {
+    background: #e4a71f;
+}
+
+.btn:focus-visible,
+.brand:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+.topbar .brand:focus-visible {
+    outline-color: var(--amber);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* Top bar navigation (used on pages that extend base.html) */
+.topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.topbar-nav a,
+.topbar-nav button {
+    color: #fff;
+    background: none;
+    border: none;
+    font: inherit;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.topbar-nav a:hover,
+.topbar-nav button:hover {
+    color: var(--amber);
+}
+
+.topbar-nav a:focus-visible,
+.topbar-nav button:focus-visible {
+    outline: 3px solid var(--amber);
+    outline-offset: 3px;
+}

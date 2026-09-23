@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1>{% if object %}Editar tarefa{% else %}Nova tarefa{% endif %}</h1>
+{% load static %}
+{% block title %}{% if object %}Editar tarefa{% else %}Nova tarefa{% endif %} · Educamax{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/tarefas.css' %}">{% endblock %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Salvar</button>
-    <a href="{% url 'tarefas:lista' %}">Cancelar</a>
-</form>
+{% block content %}
+<main class="page">
+    <div class="page-header">
+        <h1>{% if object %}Editar tarefa{% else %}Nova tarefa{% endif %}</h1>
+    </div>
+
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Salvar</button>
+                <a href="{% url 'tarefas:lista' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</main>
 {% endblock %}

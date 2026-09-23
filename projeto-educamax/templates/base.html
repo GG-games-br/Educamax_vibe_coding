@@ -9,6 +9,19 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <header class="topbar">
+        <a href="/" class="brand">Educa<span>max</span></a>
+        {% if user.is_authenticated %}
+        <nav class="topbar-nav">
+            <a href="{% url 'tarefas:lista' %}">Tarefas</a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Sair</button>
+            </form>
+        </nav>
+        {% endif %}
+    </header>
+
     {% block content %}{% endblock %}
 </body>
 </html>
