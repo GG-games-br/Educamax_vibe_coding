@@ -1,0 +1,28 @@
+{# Usage: {% include 'tarefas/_painel_tarefas.html' %}  (needs `tarefas_proximas` in the context) #}
+<section class="panel panel-wide">
+    <div class="panel-header">
+        <h2>Próximas tarefas</h2>
+        <a href="{% url 'tarefas:lista' %}" class="panel-link">Ver todas</a>
+    </div>
+    <div class="panel-body">
+        {% if tarefas_proximas %}
+        <ul class="panel-tasks">
+            {% for tarefa in tarefas_proximas %}
+            <li class="panel-task">
+                <div>
+                    <div class="panel-task-title">{{ tarefa.titulo }}</div>
+                    <div class="panel-task-meta">Por {{ tarefa.criado_por.username }}</div>
+                </div>
+                {% if tarefa.data_entrega %}
+                    <span class="badge">Entrega: {{ tarefa.data_entrega|date:"d/m/Y" }}</span>
+                {% else %}
+                    <span class="badge badge-none">Sem data</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p class="panel-empty">Nenhuma tarefa por enquanto.</p>
+        {% endif %}
+    </div>
+</section>

@@ -1,11 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aluno</title>
-</head>
-<body>
-    <h2>Farmando aura</h2>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Painel do aluno · Educamax{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
+
+{% block content %}
+<main class="dashboard">
+    <h1 class="dashboard-title">Olá, {{ user.first_name|default:user.username }}</h1>
+    <p class="dashboard-subtitle">Painel do aluno</p>
+
+    <div class="panel-grid">
+
+        {# Panel: tasks #}
+        {% include 'tarefas/_painel_tarefas.html' %}
+
+        {# Panel: student info #}
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Meus dados</h2>
+            </div>
+            <div class="panel-body">
+                <dl class="info-list">
+                    <dt>Nome</dt>
+                    <dd>{{ user.get_full_name|default:user.username }}</dd>
+                    <dt>E-mail</dt>
+                    <dd>{{ user.email }}</dd>
+                    <dt>Matrícula</dt>
+                    <dd>{{ user.perfil_aluno.matricula|default:"Não informada" }}</dd>
+                </dl>
+            </div>
+        </section>
+
+        {# To add a new panel, copy the <section class="panel"> block above #}
+
+    </div>
+</main>
+{% endblock %}
