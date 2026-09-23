@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Tarefas{% endblock %}
+{% block content %}
+<h1>Tarefas</h1>
+
+{% if user.cargo == 'PROFESSOR' or user.cargo == 'ADMIN' %}
+    <a href="{% url 'tarefas:criar' %}">+ Nova tarefa</a>
+{% endif %}
+
+<ul>
+{% for tarefa in object_list %}
+    <li>
+        <strong>{{ tarefa.titulo }}</strong>
+        {% if tarefa.data_entrega %}(entrega: {{ tarefa.data_entrega|date:"d/m/Y" }}){% endif %}
+        <p>{{ tarefa.descricao }}</p>
+        <small>Por {{ tarefa.criado_por.username }}</small>
+
+        {% if tarefa.criado_por == user %}
+            <a href="{% url 'tarefas:editar' tarefa.pk %}">Editar</a>
+            <a href="{% url 'tarefas:excluir' tarefa.pk %}">Excluir</a>
+        {% endif %}
+    </li>
+{% empty %}
+    <li>Nenhuma tarefa cadastrada.</li>
+{% endfor %}
+</ul>
+{% endblock %}

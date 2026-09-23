@@ -31,4 +31,5 @@ urlpatterns = [
     path("", views.index),
     path('user/', include('user.urls')),
     path('portal/', include('portal.urls')),
+    path('tarefas/', include('tarefas.urls')),
 ]
