@@ -12,7 +12,14 @@
     <!-- Faixa Informativa Obrigatória: Simulação Financeira -->
     <div class="demo-banner">
         <span class="badge">Aviso</span>
-        <span>{{ simulado_aviso }} — Nenhuma movimentação bancária real é executada.</span>
+        <span>
+            {{ simulado_aviso }} — Nenhuma movimentação bancária real é executada.
+            {% if offline_mode %}
+                <strong style="margin-left: 8px; background: rgba(0,0,0,0.18); padding: 3px 8px; border-radius: 4px;">
+                    ⚡ Modo Demonstração Offline Ativo (Navegando sem MySQL)
+                </strong>
+            {% endif %}
+        </span>
     </div>
 
     <!-- Navegação Principal -->

@@ -50,9 +50,11 @@ def create_app(config_class=Config):
 
     @app.context_processor
     def inject_global_vars():
+        from app.repositories.db import is_db_connected
         return {
             "app_name": "EducaMax",
-            "simulado_aviso": "Ambiente de Demonstração — Dados Financeiros Fictícios"
+            "simulado_aviso": "Ambiente de Demonstração — Dados Financeiros Fictícios",
+            "offline_mode": not is_db_connected()
         }
 
     return app

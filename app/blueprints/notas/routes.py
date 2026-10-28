@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.blueprints.auth.decorators import perfil_required
 from app.repositories.academic_repository import AcademicRepository
 from app.repositories.notas_repository import NotasRepository
+from app.services.academic_service import AcademicService
 from app.services.notas_service import NotasService
 
 notas_bp = Blueprint("notas", __name__, url_prefix="/notas")
