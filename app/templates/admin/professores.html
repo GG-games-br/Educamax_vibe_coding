@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Professores e Turmas — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Professores & Alocação de Turmas</h1>
+            <p class="card-subtitle">Distribuição do corpo docente nas turmas ativas</p>
+        </div>
+        <a href="{{ url_for('admin.academico_hub') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Hub</a>
+    </div>
+
+    <!-- Formulário de Alocação -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Alocar Professor em uma Turma</h3>
+        <form method="POST" action="{{ url_for('admin.vincular_professor_turma') }}" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div style="flex: 2; min-width: 250px;">
+                <label for="id_professor" class="form-label">Docente</label>
+                <select id="id_professor" name="id_professor" class="form-control" required>
+                    <option value="">Selecione o professor...</option>
+                    {% for p in professores %}
+                        <option value="{{ p.id_professor }}">{{ p.nome }} (Matrícula: {{ p.matricula }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="flex: 1; min-width: 180px;">
+                <label for="id_turma_prof" class="form-label">Turma a Lecionar</label>
+                <select id="id_turma_prof" name="id_turma" class="form-control" required>
+                    <option value="">Selecione a turma...</option>
+                    {% for t in turmas %}
+                        <option value="{{ t.id_turma }}">Turma {{ t.id_turma|upper }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="height: 42px;">
+                + Confirmar Alocação
+            </button>
+        </form>
+    </div>
+
+    <!-- Tabela de Professores -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Corpo Docente Ativo</h3>
+    {% if professores %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Matrícula Funcional</th>
+                        <th>Nome Completo</th>
+                        <th>E-mail</th>
+                        <th>Turmas Sob Sua Regência</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in professores %}
+                        <tr>
+                            <td>#{{ p.id_professor }}</td>
+                            <td><strong>{{ p.matricula }}</strong></td>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.email }}</td>
+                            <td>
+                                {% if p.total_turmas > 0 %}
+                                    <span class="badge-status badge-ativo">
+                                        {{ p.total_turmas }} turma(s) vinculada(s)
+                                    </span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">
+                                        Nenhuma turma alocada
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhum professor cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

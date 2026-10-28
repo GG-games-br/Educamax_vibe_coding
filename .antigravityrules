@@ -1,0 +1,11 @@
+Antes de qualquer tarefa neste projeto,
+leia por completo os arquivos em ordem, e siga suas instruções rigorosamente, 
+especialmente a regra de que dinheiro é sempre fictício:
+
+00-visao-geral.md
+01-banco-de-dados.md
+02-autenticacao-contas.md
+03-perfis-permissoes.md
+04-financeiro-simulado.md
+05-arquitetura-escalabilidade.md
+

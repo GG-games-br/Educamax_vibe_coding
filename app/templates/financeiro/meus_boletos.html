@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Boletos Escolares — Área do Responsável{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Boletos dos Meus Dependentes</h1>
+            <p class="card-subtitle">Mensalidades e cobranças escolares (Valores meramente demonstrativos)</p>
+        </div>
+        <span class="badge-status badge-perfil">Responsável: {{ current_user.nome }}</span>
+    </div>
+
+    <div class="alert alert-info" style="margin-bottom: 20px;">
+        <span>
+            ℹ️ <strong>Demonstração Fictícia:</strong> O botão "Pagar" simula a quitação do documento de forma puramente acadêmica. Nenhum valor monetário é transferido.
+        </span>
+    </div>
+
+    {% if boletos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nº Boleto</th>
+                        <th>Aluno</th>
+                        <th>Descrição / Tipo</th>
+                        <th>Vencimento</th>
+                        <th>Valor Simulado</th>
+                        <th>Situação</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in boletos %}
+                        <tr>
+                            <td>#{{ b.id_boleto }}</td>
+                            <td><strong>{{ b.nome_aluno }}</strong></td>
+                            <td>{{ b.tipo|capitalize }}</td>
+                            <td>{{ b.data_vencimento }}</td>
+                            <td><strong>R$ {{ "%.2f"|format(b.valor) }}</strong></td>
+                            <td>
+                                {% if b.status == 'pago' %}
+                                    <span class="badge-status badge-ativo">✓ Quitado</span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">Aguardando Pagamento</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 6px;">
+                                    <a href="{{ url_for('financeiro.visualizar_boleto', id_boleto=b.id_boleto) }}" class="btn btn-secondary btn-sm">
+                                        Visualizar Boleto
+                                    </a>
+                                    {% if b.status != 'pago' %}
+                                        <form method="POST" action="{{ url_for('financeiro.pagar_boleto', id_boleto=b.id_boleto) }}" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                Simular Pagamento
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📄</div>
+            <h3 style="font-size: 1.2rem; color: var(--secondary); margin-bottom: 4px;">Nenhum boleto pendente ou emitido</h3>
+            <p style="font-size: 0.9rem;">Seus dependentes estão com a situação financeira simulada em dia.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

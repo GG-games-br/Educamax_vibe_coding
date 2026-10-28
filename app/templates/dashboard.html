@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h1 class="card-title">Painel Geral</h1>
+            <p class="card-subtitle">Bem-vindo(a), <strong>{{ current_user.nome }}</strong>!</p>
+        </div>
+        <div>
+            <span class="badge-status badge-perfil" style="font-size: 0.85rem; padding: 6px 14px;">
+                Perfil: {{ current_user.perfil|upper }}
+            </span>
+            <span class="badge-status badge-ativo" style="font-size: 0.85rem; padding: 6px 14px;">
+                Status: {{ current_user.status_conta|upper }}
+            </span>
+        </div>
+    </div>
+
+    <div style="background: #f8fafc; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--secondary);">Dados da Sua Sessão:</h4>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap; font-size: 0.88rem; color: var(--text-muted);">
+            <div><strong>E-mail:</strong> {{ current_user.email }}</div>
+            {% if current_user.matricula %}
+                <div><strong>Matrícula:</strong> {{ current_user.matricula }}</div>
+            {% endif %}
+            {% if current_user.cargo_nome %}
+                <div><strong>Cargo:</strong> {{ current_user.cargo_nome }}</div>
+            {% endif %}
+            <div><strong>ID da Conta:</strong> #{{ current_user.id_conta }}</div>
+        </div>
+    </div>
+
+    {% if current_user.is_admin %}
+        <div style="background-color: var(--warning-bg); border: 1px solid #fde047; padding: 18px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <strong style="color: var(--warning); font-size: 1rem;">Módulo de Aprovação de Contas</strong>
+                <p style="color: #92400e; font-size: 0.88rem; margin-top: 2px;">
+                    Existem solicitações de cadastro de novos professores e colaboradores para análise.
+                </p>
+            </div>
+            <a href="{{ url_for('auth.contas_pendentes') }}" class="btn btn-primary btn-sm">
+                Gerenciar Solicitações Pendentes
+            </a>
+        </div>
+    {% endif %}
+
+    <h3 style="font-size: 1.1rem; margin-bottom: 16px; color: var(--secondary);">
+        Módulos Disponíveis para o seu Perfil:
+    </h3>
+
+    <div class="hub-grid">
+        {% if current_user.perfil == 'aluno' %}
+            <div class="hub-card">
+                <h3>Minha Matrícula e Turma</h3>
+                <p>Consulte sua situação acadêmica e turma atribuída.</p>
+                <a href="{{ url_for('aluno.meu_perfil') }}" class="btn btn-primary btn-sm">Acessar Meu Espaço &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Boletim & Notas</h3>
+                <p>Consulte seu boletim escolar por matéria e ano letivo.</p>
+                {% if current_user.matricula %}
+                    <a href="{{ url_for('notas.ver_boletim', matricula=current_user.matricula) }}" class="btn btn-primary btn-sm">Ver Boletim &rarr;</a>
+                {% else %}
+                    <button class="btn btn-secondary btn-sm" disabled>Matrícula não vinculada</button>
+                {% endif %}
+            </div>
+
+        {% elif current_user.perfil == 'responsavel' %}
+            <div class="hub-card">
+                <h3>Meus Dependentes</h3>
+                <p>Acompanhe e visualize os estudantes vinculados à sua conta.</p>
+                <a href="{{ url_for('responsavel.meus_dependentes') }}" class="btn btn-primary btn-sm">Ver Meus Dependentes &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Fazer Requisição</h3>
+                <p>Solicite fardas, materiais escolares ou prova substitutiva.</p>
+                <a href="{{ url_for('requisicoes.minhas_requisicoes') }}" class="btn btn-primary btn-sm">Abrir Solicitação &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Boletos Fictícios</h3>
+                <p>Visualize e simule o pagamento de mensalidades e taxas escolares.</p>
+                <a href="{{ url_for('financeiro.meus_boletos') }}" class="btn btn-primary btn-sm">Acessar Boletos &rarr;</a>
+            </div>
+
+        {% elif current_user.perfil == 'professor' %}
+            <div class="hub-card">
+                <h3>Minhas Turmas</h3>
+                <p>Acesse o diário e a lista de alunos das turmas que você leciona.</p>
+                <a href="{{ url_for('professor.minhas_turmas') }}" class="btn btn-primary btn-sm">Acessar Turmas &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Lançamento de Notas</h3>
+                <p>Cadastre provas, tarefas e lance o histórico escolar.</p>
+                <a href="{{ url_for('notas.painel_lancamento') }}" class="btn btn-primary btn-sm">Lançar Notas &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Meu Salário Simulado</h3>
+                <p>Consulte o comprovante de rendimentos e o status do seu holerite fictício.</p>
+                <a href="{{ url_for('financeiro.meu_salario') }}" class="btn btn-primary btn-sm">Ver Meu Salário &rarr;</a>
+            </div>
+
+        {% elif current_user.perfil == 'funcionario' %}
+            <div class="hub-card">
+                <h3>Gestão Acadêmica</h3>
+                <p>Controle de turmas, matérias, enturmação de alunos e alocação de docentes.</p>
+                <a href="{{ url_for('admin.academico_hub') }}" class="btn btn-primary btn-sm">Acessar Hub Acadêmico &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Requisições de Pais</h3>
+                <p>Aprovação e resposta aos pedidos de farda e 2ª chamada.</p>
+                <a href="{{ url_for('requisicoes.gerenciar') }}" class="btn btn-primary btn-sm">Atender Pedidos &rarr;</a>
+            </div>
+            <div class="hub-card">
+                <h3>Financeiro Simulado</h3>
+                <p>Controle de boletos emitidos, salários fictícios e prestadores.</p>
+                <a href="{{ url_for('financeiro.painel') }}" class="btn btn-primary btn-sm">Acessar Financeiro &rarr;</a>
+            </div>
+            {% if not current_user.is_admin %}
+                <div class="hub-card">
+                    <h3>Meu Salário Simulado</h3>
+                    <p>Consulte o status de quitação do seu salário mensal fictício.</p>
+                    <a href="{{ url_for('financeiro.meu_salario') }}" class="btn btn-primary btn-sm">Ver Holerite &rarr;</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

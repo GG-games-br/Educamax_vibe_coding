@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Boletim Escolar — {{ dados.aluno.nome }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Boletim & Histórico Escolar</h1>
+            <p class="card-subtitle">
+                Estudante: <strong>{{ dados.aluno.nome }}</strong> — Matrícula: <strong>{{ dados.aluno.matricula }}</strong>
+            </p>
+        </div>
+        <span class="badge-status badge-perfil">
+            {% if dados.aluno.id_turma %}Turma {{ dados.aluno.id_turma|upper }} ({{ dados.aluno.ano }}){% else %}Sem Turma{% endif %}
+        </span>
+    </div>
+
+    <!-- Médias Consolidadas no Histórico -->
+    <h3 style="font-size: 1.15rem; margin-bottom: 12px; color: var(--secondary);">Desempenho por Disciplina (Histórico Escolar)</h3>
+    {% if dados.historico %}
+        <div class="table-responsive" style="margin-bottom: 28px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Ano Letivo</th>
+                        <th>Média Final / Nota</th>
+                        <th>Situação Acadêmica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in dados.historico %}
+                        <tr>
+                            <td><strong>{{ h.nome_materia }}</strong></td>
+                            <td>{{ h.ano }}</td>
+                            <td>
+                                <strong style="font-size: 1.1rem; color: {% if h.nota >= 6.0 %}var(--success){% else %}var(--danger){% endif %};">
+                                    {{ "%.2f"|format(h.nota) }}
+                                </strong>
+                            </td>
+                            <td>
+                                {% if h.nota >= 6.0 %}
+                                    <span class="badge-status badge-ativo">Aprovado</span>
+                                {% else %}
+                                    <span class="badge-status badge-recusado">Recuperação</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); margin-bottom: 28px;">Nenhuma nota consolidada no histórico escolar deste ano letivo.</p>
+    {% endif %}
+
+    <!-- Provas e Tarefas Recentes -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+        <!-- Provas -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Avaliações & Provas</h3>
+            {% if dados.provas %}
+                <ul style="list-style: none; padding: 0;">
+                    {% for p in dados.provas %}
+                        <li style="border-bottom: 1px solid #e2e8f0; padding: 8px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>{{ p.nome_materia }}</strong>: {{ p.descricao }}
+                                <small style="display: block; color: var(--text-muted);">Prof. {{ p.nome_professor }} — {{ p.data_prova }}</small>
+                            </div>
+                            <span class="badge-status {% if p.nota >= 6.0 %}badge-ativo{% else %}badge-recusado{% endif %}">
+                                Nota: {{ "%.2f"|format(p.nota) }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma prova registrada.</p>
+            {% endif %}
+        </div>
+
+        <!-- Tarefas -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Tarefas & Atividades</h3>
+            {% if dados.tarefas %}
+                <ul style="list-style: none; padding: 0;">
+                    {% for t in dados.tarefas %}
+                        <li style="border-bottom: 1px solid #e2e8f0; padding: 8px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>{{ t.nome_materia }}</strong>: {{ t.descricao }}
+                                <small style="display: block; color: var(--text-muted);">Prof. {{ t.nome_professor }}</small>
+                            </div>
+                            <span class="badge-status {% if t.nota >= 6.0 %}badge-ativo{% else %}badge-recusado{% endif %}">
+                                Nota: {{ "%.2f"|format(t.nota) }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma tarefa lançada.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

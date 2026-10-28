@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Acesso ao Sistema — EducaMax{% endblock %}
+
+{% block content %}
+<div style="max-width: 480px; margin: 40px auto;">
+    <div class="card">
+        <div class="card-header" style="text-align: center;">
+            <h2 class="card-title">Acesso ao Sistema</h2>
+            <p class="card-subtitle">Informe suas credenciais cadastradas</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="identificador" class="form-label">E-mail ou Nome Completo</label>
+                <input 
+                    type="text" 
+                    id="identificador" 
+                    name="identificador" 
+                    class="form-control" 
+                    placeholder="Ex: joao.silva@escola.com ou João da Silva"
+                    value="{{ identificador or '' }}" 
+                    required 
+                    autofocus
+                >
+                <p class="form-help">Você pode entrar utilizando seu e-mail ou seu nome cadastrado.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="senha" class="form-label">Senha</label>
+                <input 
+                    type="password" 
+                    id="senha" 
+                    name="senha" 
+                    class="form-control" 
+                    placeholder="••••••••" 
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top: 24px; padding: 12px;">
+                Entrar no EducaMax
+            </button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+                Ainda não possui cadastro? 
+                <a href="{{ url_for('auth.cadastro_hub') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">
+                    Criar nova conta
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Alunos da Turma {{ id_turma|upper }} — Área do Professor{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Alunos da Turma {{ id_turma|upper }}</h1>
+            <p class="card-subtitle">Listagem de chamada e desempenho dos estudantes</p>
+        </div>
+        <a href="{{ url_for('professor.minhas_turmas') }}" class="btn btn-secondary btn-sm">&larr; Voltar às Minhas Turmas</a>
+    </div>
+
+    {% if alunos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Nome Completo</th>
+                        <th>E-mail</th>
+                        <th>Contato</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alunos %}
+                        <tr>
+                            <td><strong>{{ a.matricula }}</strong></td>
+                            <td>{{ a.nome }}</td>
+                            <td>{{ a.email }}</td>
+                            <td>{{ a.numero or '—' }}</td>
+                            <td style="text-align: right;">
+                                <button class="btn btn-secondary btn-sm" disabled title="Disponível na Fase 4">
+                                    Lançar Notas (Fase 4)
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <p>Nenhum aluno matriculado nesta turma até o momento.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

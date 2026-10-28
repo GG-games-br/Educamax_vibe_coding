@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Folha de Pagamento Salarial — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Folha de Pagamento (Salários Fictícios)</h1>
+            <p class="card-subtitle">Controle de honorários de professores e colaboradores</p>
+        </div>
+        <a href="{{ url_for('financeiro.painel') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Painel Financeiro</a>
+    </div>
+
+    <!-- Formulário de Lançamento Salarial -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Lançar Salário na Folha</h3>
+        <form method="POST" action="{{ url_for('financeiro.folha_admin') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="tipo_beneficiario" value="professor">
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <label for="id_beneficiario" class="form-label">Docente / Professor</label>
+                    <select id="id_beneficiario" name="id_beneficiario" class="form-control" required>
+                        <option value="">Selecione o professor...</option>
+                        {% for p in professores %}
+                            <option value="{{ p.id_professor }}">{{ p.nome }} (Matrícula: {{ p.matricula }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="valor" class="form-label">Valor do Salário (R$)</label>
+                    <input type="number" step="0.01" id="valor" name="valor" class="form-control" placeholder="3800.00" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mes" class="form-label">Mês de Referência</label>
+                    <select id="mes" name="mes" class="form-control" required>
+                        <option value="1">1 - Janeiro</option>
+                        <option value="2">2 - Fevereiro</option>
+                        <option value="3">3 - Março</option>
+                        <option value="4">4 - Abril</option>
+                        <option value="5">5 - Maio</option>
+                        <option value="6">6 - Junho</option>
+                        <option value="7">7 - Julho</option>
+                        <option value="8">8 - Agosto</option>
+                        <option value="9" selected>9 - Setembro</option>
+                        <option value="10">10 - Outubro</option>
+                        <option value="11">11 - Novembro</option>
+                        <option value="12">12 - Dezembro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ano" class="form-label">Ano de Referência</label>
+                    <input type="number" id="ano" name="ano" class="form-control" value="2026" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">
+                + Lançar Salário na Folha
+            </button>
+        </form>
+    </div>
+
+    <!-- Tabela Geral de Folha -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Lançamentos Salariais Registrados</h3>
+    {% if folhas %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Colaborador</th>
+                        <th>Vínculo</th>
+                        <th>Mês/Ano</th>
+                        <th>Salário (Fictício)</th>
+                        <th>Status</th>
+                        <th>Data de Quitação</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in folhas %}
+                        <tr>
+                            <td>#{{ f.id_pagamento }}</td>
+                            <td><strong>{{ f.nome_beneficiario }}</strong></td>
+                            <td>
+                                <span class="badge-status badge-perfil">{{ f.tipo_cargo }}</span>
+                            </td>
+                            <td>{{ "%02d"|format(f.mes_referencia) }}/{{ f.ano_referencia }}</td>
+                            <td><strong>R$ {{ "%.2f"|format(f.valor) }}</strong></td>
+                            <td>
+                                {% if f.status == 'pago' %}
+                                    <span class="badge-status badge-ativo">Pago</span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ f.data_pagamento or '—' }}</td>
+                            <td style="text-align: right;">
+                                {% if f.status != 'pago' %}
+                                    <form method="POST" action="{{ url_for('financeiro.quitar_salario', id_pagamento=f.id_pagamento) }}" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            ✓ Marcar como Pago
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span style="color: var(--success); font-weight: 600; font-size: 0.85rem;">Concluído</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhum salário lançado na folha de pagamento.</p>
+    {% endif %}
+</div>
+{% endblock %}

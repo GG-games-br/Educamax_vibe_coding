@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}EducaMax — Portal Educacional{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 48px 24px;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--secondary); margin-bottom: 12px;">
+        Bem-vindo ao EducaMax
+    </h1>
+    <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 32px auto;">
+        Plataforma unificada para gestão acadêmica, acompanhamento de notas, requisições de serviços e operações escolares simuladas.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary" style="padding: 12px 28px; font-size: 1rem;">
+            Acessar Minha Conta
+        </a>
+        <a href="{{ url_for('auth.cadastro_hub') }}" class="btn btn-secondary" style="padding: 12px 28px; font-size: 1rem;">
+            Cadastre-se
+        </a>
+    </div>
+</div>
+
+<div class="hub-grid">
+    <div class="hub-card">
+        <div>
+            <h3>Área do Aluno</h3>
+            <p>Acesse seu histórico de notas, acompanhe tarefas e consulte seu desempenho por matéria.</p>
+        </div>
+        <span class="badge-status badge-ativo">Acesso Direto</span>
+    </div>
+
+    <div class="hub-card">
+        <div>
+            <h3>Área do Responsável</h3>
+            <p>Acompanhe o rendimento dos seus filhos, solicite fardas, materiais ou 2ª chamada e consulte boletos fictícios.</p>
+        </div>
+        <span class="badge-status badge-ativo">Acesso Direto</span>
+    </div>
+
+    <div class="hub-card">
+        <div>
+            <h3>Área do Professor</h3>
+            <p>Gerencie suas turmas, lance notas de tarefas e provas e acompanhe o status do seu salário simulado.</p>
+        </div>
+        <span class="badge-status badge-pendente">Requer Aprovação</span>
+    </div>
+
+    <div class="hub-card">
+        <div>
+            <h3>Área Administrativa</h3>
+            <p>Controle total sobre turmas, prestadores de serviço, aprovação de contas e demandas escolares.</p>
+        </div>
+        <span class="badge-status badge-pendente">Requer Aprovação</span>
+    </div>
+</div>
+{% endblock %}

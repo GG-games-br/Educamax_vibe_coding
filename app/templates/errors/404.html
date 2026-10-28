@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Página Não Encontrada — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 48px 24px; max-width: 550px; margin: 40px auto;">
+    <div style="font-size: 3rem; margin-bottom: 12px;">🔍</div>
+    <h1 style="font-size: 1.8rem; color: var(--secondary); margin-bottom: 8px;">404 — Página Não Encontrada</h1>
+    <p style="color: var(--text-muted); margin-bottom: 24px;">
+        O endereço solicitado não foi localizado em nossos servidores.
+    </p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+        Ir para a Página Inicial
+    </a>
+</div>
+{% endblock %}

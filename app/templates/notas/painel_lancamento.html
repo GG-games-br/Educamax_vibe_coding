@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Lançamento de Avaliações e Notas — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Lançamento de Avaliações & Notas</h1>
+            <p class="card-subtitle">Cadastro de provas, tarefas e consolidação do histórico escolar</p>
+        </div>
+        <span class="badge-status badge-perfil">{{ current_user.nome }}</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 28px;">
+        <!-- Criar Nova Prova -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Cadastrar Nova Prova</h3>
+            <form method="POST" action="{{ url_for('notas.nova_prova') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label class="form-label">Disciplina</label>
+                    <select name="id_materia" class="form-control" required>
+                        {% for m in materias %}
+                            <option value="{{ m.id_materia }}">{{ m.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição da Prova</label>
+                    <input type="text" name="descricao" class="form-control" placeholder="Ex: Prova Mensal de Álgebra" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Data de Aplicação</label>
+                    <input type="date" name="data_prova" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    + Salvar Prova
+                </button>
+            </form>
+        </div>
+
+        <!-- Atribuir Nota em Prova -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Lançar Nota de Prova</h3>
+            <form method="POST" action="{{ url_for('notas.atribuir_nota_prova') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label class="form-label">Prova</label>
+                    <select name="id_prova" class="form-control" required>
+                        <option value="">Selecione a prova...</option>
+                        {% for p in provas %}
+                            <option value="{{ p.id_prova }}">{{ p.nome_materia }}: {{ p.descricao }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Aluno</label>
+                    <select name="matricula" class="form-control" required>
+                        <option value="">Selecione o aluno...</option>
+                        {% for a in alunos %}
+                            <option value="{{ a.matricula }}">{{ a.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nota (0,00 a 10,00)</label>
+                    <input type="number" step="0.01" min="0" max="10" name="nota" class="form-control" placeholder="Ex: 8.50" required>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-sm btn-block">
+                    Gravar Nota da Prova
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+        <!-- Criar Nova Tarefa -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Cadastrar Nova Tarefa</h3>
+            <form method="POST" action="{{ url_for('notas.nova_tarefa') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label class="form-label">Disciplina</label>
+                    <select name="id_materia" class="form-control" required>
+                        {% for m in materias %}
+                            <option value="{{ m.id_materia }}">{{ m.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descrição da Tarefa</label>
+                    <input type="text" name="descricao" class="form-control" placeholder="Ex: Lista de exercícios Capítulo 3" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    + Salvar Tarefa
+                </button>
+            </form>
+        </div>
+
+        <!-- Consolidar Média no Histórico Escolar -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Lançar Média no Histórico Escolar</h3>
+            <form method="POST" action="{{ url_for('notas.lancar_historico') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label class="form-label">Aluno</label>
+                    <select name="matricula" class="form-control" required>
+                        <option value="">Selecione o aluno...</option>
+                        {% for a in alunos %}
+                            <option value="{{ a.matricula }}">{{ a.nome }} ({{ a.matricula }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label class="form-label">Disciplina</label>
+                        <select name="id_materia" class="form-control" required>
+                            {% for m in materias %}
+                                <option value="{{ m.id_materia }}">{{ m.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Nota Final</label>
+                        <input type="number" step="0.01" min="0" max="10" name="nota" class="form-control" placeholder="Ex: 9.0" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    Consolidar no Histórico
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

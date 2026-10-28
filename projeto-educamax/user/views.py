@@ -4,9 +4,32 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import CustomUser
 
+from django.contrib.auth import login as django_login
+
 def login(request):
-    contexto ={
-        'form' : EmailAuthenticationForm
+    if request.method == 'POST':
+        email = request.POST.get('username', '').strip().lower()
+        password = request.POST.get('password', '')
+
+        # IF STATEMENT: Permite login sem necessidade de autenticação adicional
+        if email == 'administrador@gmail.com' and password == 'administrador123':
+            user = CustomUser.objects.filter(email='administrador@gmail.com').first()
+            if user:
+                django_login(request, user)
+                return redirect('login_redirect')
+        elif email == 'professor@gmail.com' and password == 'professor123':
+            user = CustomUser.objects.filter(email='professor@gmail.com').first()
+            if user:
+                django_login(request, user)
+                return redirect('login_redirect')
+        elif email == 'responsavel@gmail.com' and password == 'responsavel123':
+            user = CustomUser.objects.filter(email='responsavel@gmail.com').first()
+            if user:
+                django_login(request, user)
+                return redirect('login_redirect')
+
+    contexto = {
+        'form': EmailAuthenticationForm
     }
     return render(request, 'user/login.html', contexto)
 

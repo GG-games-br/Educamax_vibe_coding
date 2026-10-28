@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Conta — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="text-align: center;">
+        <h1 class="card-title">Selecione seu Perfil de Acesso</h1>
+        <p class="card-subtitle">
+            Escolha o tipo de conta que deseja registrar no EducaMax
+        </p>
+    </div>
+
+    <div class="hub-grid">
+        <a href="{{ url_for('auth.cadastro_aluno') }}" class="hub-card">
+            <div>
+                <h3>Aluno</h3>
+                <p>Para estudantes devidamente matriculados. O acesso é liberado imediatamente após o cadastro.</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                <span class="badge-status badge-ativo">Acesso Imediato</span>
+                <span style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Cadastrar &rarr;</span>
+            </div>
+        </a>
+
+        <a href="{{ url_for('auth.cadastro_responsavel') }}" class="hub-card">
+            <div>
+                <h3>Responsável</h3>
+                <p>Para pais ou responsáveis legais por alunos. Acesso liberado de imediato após preenchimento.</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                <span class="badge-status badge-ativo">Acesso Imediato</span>
+                <span style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Cadastrar &rarr;</span>
+            </div>
+        </a>
+
+        <a href="{{ url_for('auth.cadastro_professor') }}" class="hub-card">
+            <div>
+                <h3>Professor</h3>
+                <p>Para docentes da instituição. A conta é criada como pendente e liberada após aprovação da secretaria.</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                <span class="badge-status badge-pendente">Requer Aprovação</span>
+                <span style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Solicitar &rarr;</span>
+            </div>
+        </a>
+
+        <a href="{{ url_for('auth.cadastro_funcionario') }}" class="hub-card">
+            <div>
+                <h3>Funcionário / Administrativo</h3>
+                <p>Para equipe pedagógica e gestores escolares. Requer aprovação do setor administrativo.</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                <span class="badge-status badge-pendente">Requer Aprovação</span>
+                <span style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Solicitar &rarr;</span>
+            </div>
+        </a>
+    </div>
+
+    <div style="margin-top: 32px; text-align: center;">
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Já possui uma conta ativa? 
+            <a href="{{ url_for('auth.login') }}" style="color: var(--primary); font-weight: 600;">Faça Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

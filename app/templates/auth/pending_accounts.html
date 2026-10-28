@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Aprovação de Contas Pendentes — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h1 class="card-title">Solicitações de Conta Pendentes</h1>
+            <p class="card-subtitle">
+                Aprovação e controle de acesso para Professores e Funcionários Administrativos
+            </p>
+        </div>
+        <span class="badge-status badge-pendente">
+            {{ contas|length }} Pendente(s)
+        </span>
+    </div>
+
+    {% if contas %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome Completo</th>
+                        <th>Perfil Solicitado</th>
+                        <th>E-mail</th>
+                        <th>CPF</th>
+                        <th>Cargo / Detalhes</th>
+                        <th style="text-align: right;">Ações de Gestão</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in contas %}
+                        <tr>
+                            <td>#{{ c.id_conta }}</td>
+                            <td><strong>{{ c.nome }}</strong></td>
+                            <td>
+                                <span class="badge-status badge-perfil">{{ c.tipo_perfil }}</span>
+                            </td>
+                            <td>{{ c.email }}</td>
+                            <td>{{ c.cpf }}</td>
+                            <td>
+                                {% if c.cargo_nome %}
+                                    <span style="font-weight: 500;">{{ c.cargo_nome }}</span>
+                                {% else %}
+                                    <span style="color: var(--text-muted);">Docente</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 8px;">
+                                    <form method="POST" action="{{ url_for('auth.aprovar_conta', id_conta=c.id_conta) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            ✓ Aprovar
+                                        </button>
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('auth.recusar_conta', id_conta=c.id_conta) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseja realmente recusar esta solicitação de conta?');">
+                                            ✕ Recusar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">🎉</div>
+            <h3 style="font-size: 1.2rem; color: var(--secondary); margin-bottom: 4px;">Nenhuma solicitação pendente</h3>
+            <p style="font-size: 0.9rem;">Todas as contas de professores e funcionários já foram analisadas.</p>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary btn-sm">
+            &larr; Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

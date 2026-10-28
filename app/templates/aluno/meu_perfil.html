@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Espaço Escolar — Aluno{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Espaço do Estudante</h1>
+            <p class="card-subtitle">Informações da sua matrícula e turma</p>
+        </div>
+        <span class="badge-status badge-perfil">Aluno: {{ current_user.nome }}</span>
+    </div>
+
+    {% if aluno %}
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Número de Matrícula</span>
+                    <p style="font-size: 1.2rem; font-weight: 700; color: var(--secondary);">{{ aluno.matricula }}</p>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Turma Atribuída</span>
+                    <p style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">
+                        {% if aluno.id_turma %}Turma {{ aluno.id_turma|upper }} ({{ aluno.ano }}){% else %}Aguardando enturmação{% endif %}
+                    </p>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">E-mail</span>
+                    <p style="font-size: 0.95rem;">{{ aluno.email }}</p>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Status do Acesso</span>
+                    <p><span class="badge-status badge-ativo">Matrícula Ativa</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hub-grid">
+            <div class="hub-card">
+                <h3>Minhas Notas</h3>
+                <p>Consulte seu boletim bimestral por matéria.</p>
+                <button class="btn btn-secondary btn-sm" disabled>Em breve (Fase 4)</button>
+            </div>
+            <div class="hub-card">
+                <h3>Minhas Tarefas</h3>
+                <p>Acompanhe datas e notas das atividades passadas pelos professores.</p>
+                <button class="btn btn-secondary btn-sm" disabled>Em breve (Fase 4)</button>
+            </div>
+            <div class="hub-card">
+                <h3>Minhas Provas</h3>
+                <p>Consulte notas e avaliações agendadas para sua turma.</p>
+                <button class="btn btn-secondary btn-sm" disabled>Em breve (Fase 4)</button>
+            </div>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted);">Não foi possível carregar os dados cadastrais deste aluno.</p>
+    {% endif %}
+</div>
+{% endblock %}

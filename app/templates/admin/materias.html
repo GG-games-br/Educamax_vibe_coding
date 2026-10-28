@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão de Matérias — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Matérias e Disciplinas</h1>
+            <p class="card-subtitle">Grade curricular da instituição de ensino</p>
+        </div>
+        <a href="{{ url_for('admin.academico_hub') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Hub</a>
+    </div>
+
+    <!-- Formulário de Nova Matéria -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Cadastrar Nova Matéria</h3>
+        <form method="POST" action="{{ url_for('admin.materias') }}" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="flex: 1; min-width: 250px;">
+                <label for="nome" class="form-label">Nome da Disciplina</label>
+                <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Matemática, Língua Portuguesa, História" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="height: 42px;">
+                + Cadastrar Matéria
+            </button>
+        </form>
+    </div>
+
+    <!-- Listagem -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Matérias Cadastradas</h3>
+    {% if materias %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome da Matéria</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in materias %}
+                        <tr>
+                            <td>#{{ m.id_materia }}</td>
+                            <td><strong>{{ m.nome }}</strong></td>
+                            <td style="text-align: right;">
+                                <form method="POST" action="{{ url_for('admin.remover_materia', id_materia=m.id_materia) }}" style="display: inline;" onsubmit="return confirm('Deseja realmente remover esta matéria?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhuma matéria cadastrada.</p>
+    {% endif %}
+</div>
+{% endblock %}

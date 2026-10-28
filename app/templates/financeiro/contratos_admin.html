@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Contratos de Prestadores — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Contratos de Prestadores de Serviço</h1>
+            <p class="card-subtitle">Vigência e valores contratuais acordados com terceirizados</p>
+        </div>
+        <a href="{{ url_for('financeiro.painel') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Painel Financeiro</a>
+    </div>
+
+    <!-- Formulário de Novo Contrato -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Registrar Novo Contrato</h3>
+        <form method="POST" action="{{ url_for('financeiro.contratos_admin') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <label for="id_servico" class="form-label">Prestador de Serviço</label>
+                    <select id="id_servico" name="id_servico" class="form-control" required>
+                        <option value="">Selecione o prestador...</option>
+                        {% for p in prestadores %}
+                            <option value="{{ p.id_servico }}">{{ p.servico }} (CNPJ: {{ p.cnpj }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="valor" class="form-label">Valor do Contrato (R$)</label>
+                    <input type="number" step="0.01" id="valor" name="valor" class="form-control" placeholder="12000.00">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao" class="form-label">Objeto do Contrato / Descrição</label>
+                <textarea id="descricao" name="descricao" class="form-control" rows="2" placeholder="Prestação de serviços de limpeza e conservação Predial..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="data_inicio" class="form-label">Início de Vigência *</label>
+                    <input type="date" id="data_inicio" name="data_inicio" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="data_fim" class="form-label">Término de Vigência</label>
+                    <input type="date" id="data_fim" name="data_fim" class="form-control">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">
+                + Salvar Contrato
+            </button>
+        </form>
+    </div>
+
+    <!-- Tabela de Contratos -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Contratos Firmados</h3>
+    {% if contratos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Prestador</th>
+                        <th>Objeto / Descrição</th>
+                        <th>Valor (Fictício)</th>
+                        <th>Vigência</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in contratos %}
+                        <tr>
+                            <td>#{{ c.id_contrato }}</td>
+                            <td><strong>{{ c.nome_prestador }}</strong></td>
+                            <td>{{ c.descricao or '—' }}</td>
+                            <td>
+                                {% if c.valor %}
+                                    R$ {{ "%.2f"|format(c.valor) }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ c.data_inicio }} até {{ c.data_fim or 'Indeterminado' }}
+                            </td>
+                            <td>
+                                {% if c.status == 'ativo' %}
+                                    <span class="badge-status badge-ativo">Ativo</span>
+                                {% else %}
+                                    <span class="badge-status badge-recusado">Encerrado</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                {% if c.status == 'ativo' %}
+                                    <form method="POST" action="{{ url_for('financeiro.encerrar_contrato', id_contrato=c.id_contrato) }}" style="display: inline;" onsubmit="return confirm('Deseja encerrar a vigência deste contrato?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Encerrar
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span style="color: var(--text-muted); font-size: 0.85rem;">Concluído</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhum contrato cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

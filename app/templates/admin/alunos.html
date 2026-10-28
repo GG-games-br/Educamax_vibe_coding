@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Alunos e Vínculos — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Alunos & Enturmação</h1>
+            <p class="card-subtitle">Gestão de estudantes, alocação em turmas e vinculação a responsáveis</p>
+        </div>
+        <a href="{{ url_for('admin.academico_hub') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Hub</a>
+    </div>
+
+    <!-- Painel de Ações Rápidas de Vínculos -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <!-- Vincular Aluno a Turma -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Matricular Aluno em Turma</h3>
+            <form method="POST" action="{{ url_for('admin.vincular_aluno_turma') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="form-group">
+                    <label for="matricula" class="form-label">Aluno</label>
+                    <select id="matricula" name="matricula" class="form-control" required>
+                        <option value="">Selecione o aluno...</option>
+                        {% for a in alunos %}
+                            <option value="{{ a.matricula }}">{{ a.nome }} (Matrícula: {{ a.matricula }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_turma" class="form-label">Turma</label>
+                    <select id="id_turma" name="id_turma" class="form-control" required>
+                        <option value="">Selecione a turma...</option>
+                        {% for t in turmas %}
+                            <option value="{{ t.id_turma }}">Turma {{ t.id_turma|upper }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    Confirmar Matrícula na Turma
+                </button>
+            </form>
+        </div>
+
+        <!-- Vincular Aluno a Responsável -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Vincular Aluno a Responsável Legal</h3>
+            <form method="POST" action="{{ url_for('admin.vincular_responsavel_aluno') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="id_responsavel" class="form-label">Responsável</label>
+                    <select id="id_responsavel" name="id_responsavel" class="form-control" required>
+                        <option value="">Selecione o responsável...</option>
+                        {% for r in responsaveis %}
+                            <option value="{{ r.id_responsavel }}">{{ r.nome }} (CPF: {{ r.cpf }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label for="matricula_resp" class="form-label">Aluno Dependente</label>
+                        <select id="matricula_resp" name="matricula" class="form-control" required>
+                            <option value="">Selecione o aluno...</option>
+                            {% for a in alunos %}
+                                <option value="{{ a.matricula }}">{{ a.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="parentesco" class="form-label">Parentesco</label>
+                        <input type="text" id="parentesco" name="parentesco" class="form-control" placeholder="Pai/Mãe" value="Pai/Mãe">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    Vincular Dependente
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela Geral de Alunos -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Lista Geral de Alunos Cadastrados</h3>
+    {% if alunos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Nome Completo</th>
+                        <th>CPF</th>
+                        <th>E-mail</th>
+                        <th>Turma Atual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alunos %}
+                        <tr>
+                            <td><strong>{{ a.matricula }}</strong></td>
+                            <td>{{ a.nome }}</td>
+                            <td>{{ a.cpf }}</td>
+                            <td>{{ a.email }}</td>
+                            <td>
+                                {% if a.id_turma %}
+                                    <span class="badge-status badge-ativo">
+                                        Turma {{ a.id_turma|upper }} ({{ a.ano }})
+                                    </span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">
+                                        Sem Turma
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhum aluno cadastrado no sistema.</p>
+    {% endif %}
+</div>
+{% endblock %}

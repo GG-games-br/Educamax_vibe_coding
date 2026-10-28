@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão de Turmas — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Turmas Escolares</h1>
+            <p class="card-subtitle">Controle de turmas ativas do 1º ao 6º ano</p>
+        </div>
+        <a href="{{ url_for('admin.academico_hub') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Hub</a>
+    </div>
+
+    <!-- Formulário de Criação de Turma -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Adicionar Nova Turma</h3>
+        {% if disponiveis %}
+            <form method="POST" action="{{ url_for('admin.turmas') }}" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="id_turma" class="form-label">Selecione o Código da Turma</label>
+                    <select id="id_turma" name="id_turma" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        {% for t in disponiveis %}
+                            <option value="{{ t }}">Turma {{ t|upper }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="height: 42px;">
+                    + Cadastrar Turma
+                </button>
+            </form>
+        {% else %}
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Todas as opções de turmas do schema já estão ativas.</p>
+        {% endif %}
+    </div>
+
+    <!-- Listagem de Turmas -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Turmas em Operação</h3>
+    {% if turmas %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Código da Turma</th>
+                        <th>Alunos Matriculados</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in turmas %}
+                        <tr>
+                            <td>
+                                <strong style="font-size: 1.1rem; color: var(--primary);">
+                                    Turma {{ t.id_turma|upper }}
+                                </strong>
+                            </td>
+                            <td>
+                                <span class="badge-status badge-ativo">
+                                    {{ t.total_alunos }} aluno(s)
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <form method="POST" action="{{ url_for('admin.remover_turma', id_turma=t.id_turma) }}" style="display: inline;" onsubmit="return confirm('Deseja realmente remover esta turma e seus vínculos?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhuma turma cadastrada no momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

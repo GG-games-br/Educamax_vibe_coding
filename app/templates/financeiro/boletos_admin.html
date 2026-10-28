@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Boletos Escolares — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Emissão & Controle de Boletos Fictícios</h1>
+            <p class="card-subtitle">Cobrança de mensalidades e taxas escolares com valor demonstrativo</p>
+        </div>
+        <a href="{{ url_for('financeiro.painel') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Painel Financeiro</a>
+    </div>
+
+    <!-- Formulários de Emissão -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <!-- Emissão Individual -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Emitir Boleto Individual</h3>
+            <form method="POST" action="{{ url_for('financeiro.boletos_admin') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="acao" value="individual">
+
+                <div class="form-group">
+                    <label for="matricula" class="form-label">Aluno Beneficiário</label>
+                    <select id="matricula" name="matricula" class="form-control" required>
+                        <option value="">Selecione o aluno...</option>
+                        {% for a in alunos %}
+                            <option value="{{ a.matricula }}">{{ a.nome }} (Matrícula: {{ a.matricula }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipo" class="form-label">Tipo de Cobrança</label>
+                        <select id="tipo" name="tipo" class="form-control" required>
+                            <option value="mensalidade">Mensalidade</option>
+                            <option value="farda">Farda Escolar</option>
+                            <option value="material">Material Didático</option>
+                            <option value="segunda_chamada">2ª Chamada de Prova</option>
+                            <option value="prova_substitutiva">Prova Substitutiva</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor" class="form-label">Valor Simulado (R$)</label>
+                        <input type="number" step="0.01" id="valor" name="valor" class="form-control" placeholder="Ex: 450.00" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="data_vencimento" class="form-label">Data de Vencimento</label>
+                    <input type="date" id="data_vencimento" name="data_vencimento" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    Gerar Boleto Individual
+                </button>
+            </form>
+        </div>
+
+        <!-- Emissão em Lote por Turma -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Gerar Mensalidades em Lote (Turma)</h3>
+            <form method="POST" action="{{ url_for('financeiro.boletos_admin') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="acao" value="lote">
+
+                <div class="form-group">
+                    <label for="id_turma" class="form-label">Turma de Destino</label>
+                    <select id="id_turma" name="id_turma" class="form-control" required>
+                        <option value="">Selecione a turma...</option>
+                        {% for t in turmas %}
+                            <option value="{{ t.id_turma }}">Turma {{ t.id_turma|upper }} ({{ t.total_alunos }} alunos)</option>
+                        {% endfor %}
+                    </select>
+                    <p class="form-help">Um boleto será gerado para cada aluno matriculado nesta turma.</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="valor_lote" class="form-label">Valor da Mensalidade (R$)</label>
+                        <input type="number" step="0.01" id="valor_lote" name="valor" class="form-control" placeholder="500.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_vencimento_lote" class="form-label">Vencimento</label>
+                        <input type="date" id="data_vencimento_lote" name="data_vencimento" class="form-control" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm btn-block">
+                    Gerar Mensalidades para Toda a Turma
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela Geral de Boletos -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Boletos Registrados</h3>
+    {% if boletos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Aluno</th>
+                        <th>Tipo</th>
+                        <th>Valor (Fictício)</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+                        <th>Data Pagamento</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in boletos %}
+                        <tr>
+                            <td>#{{ b.id_boleto }}</td>
+                            <td><strong>{{ b.nome_aluno }}</strong></td>
+                            <td>{{ b.tipo|capitalize }}</td>
+                            <td><strong>R$ {{ "%.2f"|format(b.valor) }}</strong></td>
+                            <td>{{ b.data_vencimento }}</td>
+                            <td>
+                                {% if b.status == 'pago' %}
+                                    <span class="badge-status badge-ativo">Pago</span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ b.data_pagamento or '—' }}</td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 6px;">
+                                    <a href="{{ url_for('financeiro.visualizar_boleto', id_boleto=b.id_boleto) }}" class="btn btn-secondary btn-sm" target="_blank">
+                                        Visualizar
+                                    </a>
+                                    {% if b.status != 'pago' %}
+                                        <form method="POST" action="{{ url_for('financeiro.pagar_boleto', id_boleto=b.id_boleto) }}" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                Simular Pagamento
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhum boleto emitido.</p>
+    {% endif %}
+</div>
+{% endblock %}

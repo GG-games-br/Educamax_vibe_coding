@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Dependentes — Área do Responsável{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Meus Alunos Dependentes</h1>
+            <p class="card-subtitle">Acompanhamento dos estudantes vinculados à sua conta de responsável</p>
+        </div>
+        <span class="badge-status badge-perfil">Responsável: {{ current_user.nome }}</span>
+    </div>
+
+    {% if alunos %}
+        <div class="hub-grid">
+            {% for a in alunos %}
+                <div class="hub-card">
+                    <div>
+                        <h3>{{ a.nome }}</h3>
+                        <p>Matrícula: <strong>{{ a.matricula }}</strong></p>
+                        <p>Parentesco: <span class="badge-status badge-ativo">{{ a.parentesco }}</span></p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+                            Turma Atual: <strong>{% if a.id_turma %}Turma {{ a.id_turma|upper }}{% else %}Não enturmado{% endif %}</strong>
+                        </p>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <a href="{{ url_for('responsavel.ver_dependente', matricula=a.matricula) }}" class="btn btn-primary btn-sm btn-block">
+                            Ver Informações do Aluno &rarr;
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">👨‍👩‍👦</div>
+            <h3 style="font-size: 1.2rem; color: var(--secondary); margin-bottom: 4px;">Nenhum aluno vinculado no momento</h3>
+            <p style="font-size: 0.9rem;">Entre em contato com a secretaria da escola para vincular seus filhos ao seu cadastro de responsável.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

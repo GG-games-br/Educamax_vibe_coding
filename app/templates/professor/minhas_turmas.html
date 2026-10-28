@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Turmas — Área do Professor{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Minhas Turmas</h1>
+            <p class="card-subtitle">Turmas que você leciona no presente ano letivo</p>
+        </div>
+        <span class="badge-status badge-perfil">Professor: {{ current_user.nome }}</span>
+    </div>
+
+    {% if turmas %}
+        <div class="hub-grid">
+            {% for t in turmas %}
+                <div class="hub-card">
+                    <div>
+                        <h3>Turma {{ t.id_turma|upper }}</h3>
+                        <p>Ano Letivo: <strong>{{ t.ano }}</strong></p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">
+                            Total de {{ t.total_alunos }} aluno(s) enturmados.
+                        </p>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <a href="{{ url_for('professor.ver_turma', id_turma=t.id_turma) }}" class="btn btn-primary btn-sm btn-block">
+                            Ver Diário & Alunos &rarr;
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📚</div>
+            <h3 style="font-size: 1.2rem; color: var(--secondary); margin-bottom: 4px;">Você ainda não possui turmas atribuídas</h3>
+            <p style="font-size: 0.9rem;">Solicite à secretaria ou ao setor administrativo para realizar sua alocação de turmas.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

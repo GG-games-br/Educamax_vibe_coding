@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciamento de Requisições — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Requisições de Pais e Responsáveis</h1>
+            <p class="card-subtitle">Análise e deferimento de pedidos de farda, material e provas substitutivas</p>
+        </div>
+        <span class="badge-status badge-perfil">{{ requisicoes|length }} Registro(s)</span>
+    </div>
+
+    <!-- Tabela de Requisições -->
+    {% if requisicoes %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Responsável / Aluno</th>
+                        <th>Tipo</th>
+                        <th>Detalhes</th>
+                        <th>Data</th>
+                        <th>Situação</th>
+                        <th style="text-align: right;">Atendimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requisicoes %}
+                        <tr>
+                            <td>#{{ r.id_requisicao }}</td>
+                            <td>
+                                <div><strong>{{ r.nome_aluno }}</strong> (Matrícula: {{ r.matricula }})</div>
+                                <small style="color: var(--text-muted);">Resp: {{ r.nome_responsavel }} ({{ r.cpf_responsavel }})</small>
+                            </td>
+                            <td>
+                                <span class="badge-status badge-perfil">
+                                    {{ r.tipo|replace('_', ' ')|capitalize }}
+                                </span>
+                            </td>
+                            <td style="max-width: 250px;">
+                                <p style="font-size: 0.88rem;">{{ r.descricao }}</p>
+                                {% if r.resposta_administrativo %}
+                                    <small style="color: #475569; display: block; margin-top: 4px; border-left: 2px solid var(--primary); padding-left: 6px;">
+                                        <strong>Parecer:</strong> {{ r.resposta_administrativo }}
+                                    </small>
+                                {% endif %}
+                            </td>
+                            <td>{{ r.data_solicitacao }}</td>
+                            <td>
+                                {% if r.status == 'aprovada' %}
+                                    <span class="badge-status badge-ativo">✓ Aprovada</span>
+                                {% elif r.status == 'negada' %}
+                                    <span class="badge-status badge-recusado">✕ Negada</span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                {% if r.status == 'pendente' %}
+                                    <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-{{ r.id_requisicao }}').style.display='block';">
+                                        Responder
+                                    </button>
+
+                                    <!-- Modal Inline de Resposta -->
+                                    <div id="modal-{{ r.id_requisicao }}" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+                                        <div style="background: white; border-radius: 12px; padding: 24px; max-width: 500px; margin: 60px auto; text-align: left; box-shadow: var(--shadow-lg);">
+                                            <h3 style="margin-bottom: 12px; color: var(--secondary);">Responder Requisição #{{ r.id_requisicao }}</h3>
+                                            <form method="POST" action="{{ url_for('requisicoes.responder', id_requisicao=r.id_requisicao) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Decisão *</label>
+                                                    <select name="status" class="form-control" required>
+                                                        <option value="aprovada">Aprovar Solicitação</option>
+                                                        <option value="negada">Negar / Indeferir</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Parecer Justificativo</label>
+                                                    <textarea name="resposta_administrativo" class="form-control" rows="2" placeholder="Ex: Solicitação deferida. Uniforme disponível para retirada."></textarea>
+                                                </div>
+
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Gerar Boleto Fictício (R$)</label>
+                                                        <input type="number" step="0.01" name="valor_boleto" class="form-control" placeholder="Ex: 50.00 (Opcional)">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">Vencimento Boleto</label>
+                                                        <input type="date" name="vencimento_boleto" class="form-control">
+                                                    </div>
+                                                </div>
+
+                                                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+                                                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('modal-{{ r.id_requisicao }}').style.display='none';">
+                                                        Cancelar
+                                                    </button>
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        Gravar Resposta
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span style="color: var(--text-muted); font-size: 0.85rem;">Concluído</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhuma requisição aguardando atendimento.</p>
+    {% endif %}
+</div>
+{% endblock %}

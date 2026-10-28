@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EducaMax — Gestão Escolar{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Faixa Informativa Obrigatória: Simulação Financeira -->
+    <div class="demo-banner">
+        <span class="badge">Aviso</span>
+        <span>{{ simulado_aviso }} — Nenhuma movimentação bancária real é executada.</span>
+    </div>
+
+    <!-- Navegação Principal -->
+    <header class="navbar">
+        <a href="{{ url_for('main.index') }}" class="navbar-brand">
+            Educa<span>Max</span>
+        </a>
+        <nav>
+            <ul class="nav-links">
+                {% if current_user.is_authenticated %}
+                    <li>
+                        <span class="badge-status badge-perfil">
+                            {{ current_user.perfil|upper }}{% if current_user.is_admin %} (ADMIN){% endif %}
+                        </span>
+                    </li>
+                    <li><a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a></li>
+                    
+                    {% if current_user.is_admin %}
+                        <li><a href="{{ url_for('admin.academico_hub') }}" class="nav-link">Acadêmico</a></li>
+                        <li><a href="{{ url_for('financeiro.painel') }}" class="nav-link">Financeiro</a></li>
+                        <li><a href="{{ url_for('requisicoes.gerenciar') }}" class="nav-link">Requisições</a></li>
+                        <li><a href="{{ url_for('notas.painel_lancamento') }}" class="nav-link">Notas</a></li>
+                        <li><a href="{{ url_for('auth.contas_pendentes') }}" class="nav-link">Aprovar Contas</a></li>
+                    {% elif current_user.perfil == 'professor' %}
+                        <li><a href="{{ url_for('professor.minhas_turmas') }}" class="nav-link">Minhas Turmas</a></li>
+                        <li><a href="{{ url_for('notas.painel_lancamento') }}" class="nav-link">Lançar Notas</a></li>
+                        <li><a href="{{ url_for('financeiro.meu_salario') }}" class="nav-link">Meu Salário</a></li>
+                    {% elif current_user.perfil == 'responsavel' %}
+                        <li><a href="{{ url_for('responsavel.meus_dependentes') }}" class="nav-link">Dependentes</a></li>
+                        <li><a href="{{ url_for('requisicoes.minhas_requisicoes') }}" class="nav-link">Requisições</a></li>
+                        <li><a href="{{ url_for('financeiro.meus_boletos') }}" class="nav-link">Boletos</a></li>
+                    {% elif current_user.perfil == 'aluno' %}
+                        <li><a href="{{ url_for('aluno.meu_perfil') }}" class="nav-link">Meu Espaço</a></li>
+                        {% if current_user.matricula %}
+                            <li><a href="{{ url_for('notas.ver_boletim', matricula=current_user.matricula) }}" class="nav-link">Boletim</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    <li><a href="{{ url_for('auth.logout') }}" class="nav-link" style="color: var(--danger);">Sair ({{ current_user.nome.split()[0] }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}" class="nav-link">Entrar</a></li>
+                    <li><a href="{{ url_for('auth.cadastro_hub') }}" class="btn btn-primary btn-sm">Criar Conta</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-container">
+        <!-- Flash Messages -->
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <p>&copy; 2026 EducaMax — Sistema de Gestão Operacional Escolar. Arquitetura Modular e Isolamento de Falhas.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

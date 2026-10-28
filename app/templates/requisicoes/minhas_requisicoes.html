@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Requisições — Área do Responsável{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Minhas Requisições Escolares</h1>
+            <p class="card-subtitle">Solicite fardamento, material didático ou 2ª chamada / substitutiva de provas</p>
+        </div>
+        <span class="badge-status badge-perfil">Responsável: {{ current_user.nome }}</span>
+    </div>
+
+    <!-- Formulário de Nova Requisição -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Enviar Nova Solicitação</h3>
+        {% if alunos %}
+            <form method="POST" action="{{ url_for('requisicoes.nova_requisicao') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="matricula" class="form-label">Aluno Dependente *</label>
+                        <select id="matricula" name="matricula" class="form-control" required>
+                            <option value="">Selecione o aluno...</option>
+                            {% for a in alunos %}
+                                <option value="{{ a.matricula }}">{{ a.nome }} (Matrícula: {{ a.matricula }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1;">
+                        <label for="tipo" class="form-label">Tipo de Requisição *</label>
+                        <select id="tipo" name="tipo" class="form-control" required>
+                            <option value="farda">Farda Escolar (Uniforme)</option>
+                            <option value="material">Material Didático / Apostila</option>
+                            <option value="segunda_chamada">2ª Chamada de Avaliação</option>
+                            <option value="prova_substitutiva">Prova Substitutiva</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao" class="form-label">Detalhes da Solicitação *</label>
+                    <textarea id="descricao" name="descricao" class="form-control" rows="3" placeholder="Ex: Solicito 2 camisetas tamanho M para o ano letivo de 2026..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm">
+                    + Enviar Requisição para a Secretaria
+                </button>
+            </form>
+        {% else %}
+            <p style="color: var(--text-muted);">Você precisa ter alunos vinculados para abrir requisições.</p>
+        {% endif %}
+    </div>
+
+    <!-- Histórico de Requisições -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Histórico de Solicitações</h3>
+    {% if requisicoes %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Aluno</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Data de Envio</th>
+                        <th>Status</th>
+                        <th>Parecer da Secretaria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requisicoes %}
+                        <tr>
+                            <td>#{{ r.id_requisicao }}</td>
+                            <td><strong>{{ r.nome_aluno }}</strong></td>
+                            <td>{{ r.tipo|replace('_', ' ')|capitalize }}</td>
+                            <td>{{ r.descricao }}</td>
+                            <td>{{ r.data_solicitacao }}</td>
+                            <td>
+                                {% if r.status == 'aprovada' %}
+                                    <span class="badge-status badge-ativo">✓ Aprovada</span>
+                                {% elif r.status == 'negada' %}
+                                    <span class="badge-status badge-recusado">✕ Negada</span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">Aguardando Análise</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ r.resposta_administrativo or '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhuma requisição realizada até o momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

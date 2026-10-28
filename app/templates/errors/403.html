@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Acesso Negado — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 48px 24px; max-width: 550px; margin: 40px auto;">
+    <div style="font-size: 3rem; margin-bottom: 12px;">🚫</div>
+    <h1 style="font-size: 1.8rem; color: var(--danger); margin-bottom: 8px;">403 — Acesso Proibido</h1>
+    <p style="color: var(--text-muted); margin-bottom: 24px;">
+        Seu perfil atual de usuário não possui as permissões necessárias para acessar este recurso ou executar esta ação.
+    </p>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">
+        Retornar ao Dashboard
+    </a>
+</div>
+{% endblock %}

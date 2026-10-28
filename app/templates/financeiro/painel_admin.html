@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Painel Financeiro Simulado — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Gestão Financeira (100% Simulada)</h1>
+            <p class="card-subtitle">Controle fictício de mensalidades, salários docentes e contratos</p>
+        </div>
+        <span class="badge-status badge-perfil">Módulo Administrativo</span>
+    </div>
+
+    <!-- Banner de Reforço Fictício -->
+    <div class="alert alert-warning" style="margin-bottom: 24px;">
+        <span>
+            ⚠️ <strong>Ambiente Demonstrativo:</strong> Todas as cobranças, recebimentos e salários aqui exibidos são estritamente fictícios e computados localmente no banco de dados.
+        </span>
+    </div>
+
+    <!-- Cards de Métricas Financeiras Simuladas -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px;">
+        <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 18px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #047857; text-transform: uppercase;">Recebido (Fictício)</span>
+            <p style="font-size: 1.5rem; font-weight: 800; color: #065f46; margin: 4px 0;">
+                R$ {{ "%.2f"|format(metricas.total_recebido_simulado) }}
+            </p>
+            <span style="font-size: 0.8rem; color: #059669;">{{ metricas.qtd_boletos_pagos }} boleto(s) quitado(s)</span>
+        </div>
+
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-md); padding: 18px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #b45309; text-transform: uppercase;">A Receber (Fictício)</span>
+            <p style="font-size: 1.5rem; font-weight: 800; color: #92400e; margin: 4px 0;">
+                R$ {{ "%.2f"|format(metricas.total_a_receber_simulado) }}
+            </p>
+            <span style="font-size: 0.8rem; color: #d97706;">{{ metricas.qtd_boletos_pendentes }} boleto(s) pendente(s)</span>
+        </div>
+
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-md); padding: 18px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #1d4ed8; text-transform: uppercase;">Folha Salarial Paga</span>
+            <p style="font-size: 1.5rem; font-weight: 800; color: #1e40af; margin: 4px 0;">
+                R$ {{ "%.2f"|format(metricas.total_salarios_pagos) }}
+            </p>
+            <span style="font-size: 0.8rem; color: #3b82f6;">Salários quitados</span>
+        </div>
+
+        <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: var(--radius-md); padding: 18px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #be185d; text-transform: uppercase;">Contratos Terceirizados</span>
+            <p style="font-size: 1.5rem; font-weight: 800; color: #9d174d; margin: 4px 0;">
+                {{ metricas.total_contratos_ativos }} Ativo(s)
+            </p>
+            <span style="font-size: 0.8rem; color: #db2777;">R$ {{ "%.2f"|format(metricas.total_valor_contratos) }} em contratos</span>
+        </div>
+    </div>
+
+    <!-- Navegação Rápida -->
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px;">
+        <a href="{{ url_for('financeiro.boletos_admin') }}" class="btn btn-primary">
+            Emissão & Gestão de Boletos
+        </a>
+        <a href="{{ url_for('financeiro.folha_admin') }}" class="btn btn-primary">
+            Folha de Pagamento Salarial
+        </a>
+        <a href="{{ url_for('financeiro.contratos_admin') }}" class="btn btn-secondary">
+            Contratos de Prestadores
+        </a>
+    </div>
+
+    <!-- Últimos Boletos -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Últimos Boletos Emitidos</h3>
+    {% if boletos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Aluno</th>
+                        <th>Tipo</th>
+                        <th>Valor (Fictício)</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in boletos %}
+                        <tr>
+                            <td>#{{ b.id_boleto }}</td>
+                            <td><strong>{{ b.nome_aluno }}</strong></td>
+                            <td>{{ b.tipo|capitalize }}</td>
+                            <td>R$ {{ "%.2f"|format(b.valor) }}</td>
+                            <td>{{ b.data_vencimento }}</td>
+                            <td>
+                                {% if b.status == 'pago' %}
+                                    <span class="badge-status badge-ativo">Pago</span>
+                                {% else %}
+                                    <span class="badge-status badge-pendente">Pendente</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted);">Nenhum boleto gerado ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

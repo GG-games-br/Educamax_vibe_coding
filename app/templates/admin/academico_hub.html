@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão Acadêmica — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Gestão Acadêmica e Institucional</h1>
+            <p class="card-subtitle">Administração de turmas, disciplinas, colaboradores e vínculos escolares</p>
+        </div>
+        <span class="badge-status badge-perfil">Acesso Administrativo</span>
+    </div>
+
+    <div class="hub-grid">
+        <div class="hub-card">
+            <div>
+                <h3>Turmas Escolares ({{ total_turmas }})</h3>
+                <p>Cadastre e gerencie turmas do 1º ao 6º ano (ex: 1A, 2B), visualize o número de alunos enturmados.</p>
+            </div>
+            <a href="{{ url_for('admin.turmas') }}" class="btn btn-primary btn-sm">Gerenciar Turmas &rarr;</a>
+        </div>
+
+        <div class="hub-card">
+            <div>
+                <h3>Matérias e Disciplinas ({{ total_materias }})</h3>
+                <p>Controle da grade curricular da escola (Português, Matemática, História, Ciências, etc.).</p>
+            </div>
+            <a href="{{ url_for('admin.materias') }}" class="btn btn-primary btn-sm">Gerenciar Matérias &rarr;</a>
+        </div>
+
+        <div class="hub-card">
+            <div>
+                <h3>Alunos & Enturmação ({{ total_alunos }})</h3>
+                <p>Listagem geral de alunos, matrícula em turmas e vinculação a pais e responsáveis legais.</p>
+            </div>
+            <a href="{{ url_for('admin.alunos') }}" class="btn btn-primary btn-sm">Ver Alunos &rarr;</a>
+        </div>
+
+        <div class="hub-card">
+            <div>
+                <h3>Professores & Aulas ({{ total_professores }})</h3>
+                <p>Corpo docente da instituição e alocação de professores às suas respectivas turmas.</p>
+            </div>
+            <a href="{{ url_for('admin.professores') }}" class="btn btn-primary btn-sm">Alocar Professores &rarr;</a>
+        </div>
+
+        <div class="hub-card">
+            <div>
+                <h3>Prestadores de Serviço ({{ total_prestadores }})</h3>
+                <p>Cadastro e gestão de empresas parceiras terceirizadas (limpeza, cantina, segurança).</p>
+            </div>
+            <a href="{{ url_for('admin.prestadores') }}" class="btn btn-primary btn-sm">Gerenciar Prestadores &rarr;</a>
+        </div>
+
+        <div class="hub-card">
+            <div>
+                <h3>Aprovação de Contas</h3>
+                <p>Validação de novas solicitações de cadastro feitas por professores e funcionários.</p>
+            </div>
+            <a href="{{ url_for('auth.contas_pendentes') }}" class="btn btn-primary btn-sm">Contas Pendentes &rarr;</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

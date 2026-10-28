@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Prestadores de Serviço — EducaMax{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">Prestadores de Serviço Terceirizados</h1>
+            <p class="card-subtitle">Empresas e prestadores vinculados à instituição escolar</p>
+        </div>
+        <a href="{{ url_for('admin.academico_hub') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Hub</a>
+    </div>
+
+    <!-- Formulário de Prestador -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--secondary);">Cadastrar Novo Prestador</h3>
+        <form method="POST" action="{{ url_for('admin.prestadores') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="servico" class="form-label">Serviço / Razão Social *</label>
+                    <input type="text" id="servico" name="servico" class="form-control" placeholder="Ex: Limpeza e Conservação Alpha" required>
+                </div>
+                <div class="form-group">
+                    <label for="cnpj" class="form-label">CNPJ (14 dígitos) *</label>
+                    <input type="text" id="cnpj" name="cnpj" class="form-control" maxlength="14" placeholder="12345678000199" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email" class="form-label">E-mail de Contato</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="contato@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label for="numero" class="form-label">Telefone</label>
+                    <input type="text" id="numero" name="numero" class="form-control" placeholder="(98) 3222-1100">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+                + Salvar Prestador
+            </button>
+        </form>
+    </div>
+
+    <!-- Listagem -->
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--secondary);">Prestadores Cadastrados</h3>
+    {% if prestadores %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Serviço / Empresa</th>
+                        <th>CNPJ</th>
+                        <th>Contato</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in prestadores %}
+                        <tr>
+                            <td>#{{ p.id_servico }}</td>
+                            <td><strong>{{ p.servico }}</strong></td>
+                            <td>{{ p.cnpj }}</td>
+                            <td>
+                                <div>{{ p.email or '—' }}</div>
+                                <small style="color: var(--text-muted);">{{ p.numero or '' }}</small>
+                            </td>
+                            <td style="text-align: right;">
+                                <form method="POST" action="{{ url_for('admin.remover_prestador', id_servico=p.id_servico) }}" style="display: inline;" onsubmit="return confirm('Deseja realmente remover este prestador?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 20px 0;">Nenhum prestador de serviço cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

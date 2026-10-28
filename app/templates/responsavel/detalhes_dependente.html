@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Aluno: {{ aluno.nome }} — Área do Responsável{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <h1 class="card-title">{{ aluno.nome }}</h1>
+            <p class="card-subtitle">Ficha cadastral e situação escolar do estudante</p>
+        </div>
+        <a href="{{ url_for('responsavel.meus_dependentes') }}" class="btn btn-secondary btn-sm">&larr; Voltar aos Dependentes</a>
+    </div>
+
+    <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Número de Matrícula</span>
+                <p style="font-size: 1.1rem; font-weight: 700;">{{ aluno.matricula }}</p>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Turma Vigente</span>
+                <p style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">
+                    {% if aluno.id_turma %}Turma {{ aluno.id_turma|upper }} ({{ aluno.ano }}){% else %}Pendente de enturmação{% endif %}
+                </p>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">E-mail do Aluno</span>
+                <p style="font-size: 0.95rem;">{{ aluno.email }}</p>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">CPF do Aluno</span>
+                <p style="font-size: 0.95rem;">{{ aluno.cpf }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hub-grid">
+        <div class="hub-card">
+            <h3>Boletim & Notas</h3>
+            <p>Histórico escolar de notas por disciplina e ano letivo.</p>
+            <button class="btn btn-secondary btn-sm" disabled>Em breve (Fase 4)</button>
+        </div>
+        <div class="hub-card">
+            <h3>Fazer Requisição</h3>
+            <p>Solicitar fardas, kit escolar ou 2ª chamada de prova para este aluno.</p>
+            <button class="btn btn-secondary btn-sm" disabled>Em breve (Fase 5)</button>
+        </div>
+        <div class="hub-card">
+            <h3>Boletos Fictícios</h3>
+            <p>Mensalidades e taxas escolares com valor meramente demonstrativo.</p>
+            <button class="btn btn-secondary btn-sm" disabled>Em breve (Fase 6)</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
