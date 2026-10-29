@@ -1,9 +1,32 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Variáveis de ambiente sensíveis (NUNCA subir para o GitHub!)
 .env
+.env.local
+.env.*.local
+
+# Ambientes virtuais
 .venv/
 env/
 venv/
+ENV/
+
+# Bancos de dados locais / temporários
+*.sqlite3
+*.db
 instance/
+
+# Logs e arquivos temporários
+*.log
 .pytest_cache/
+.coverage
+htmlcov/
+
+# Arquivos do sistema operacional e IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
