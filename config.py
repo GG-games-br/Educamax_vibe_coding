@@ -65,6 +65,13 @@ class Config:
     # Por padrão, ativo para facilitar testes. Pode ser desativado com ALLOW_OFFLINE_FALLBACK=false
     ALLOW_OFFLINE_FALLBACK = os.environ.get("ALLOW_OFFLINE_FALLBACK", "true").lower() in ("true", "1", "yes")
 
+    # Armazenamento de Holerites em PDF (06-folha-pagamento-pdf.md)
+    HOLERITE_UPLOAD_DIR = os.environ.get(
+        "HOLERITE_UPLOAD_DIR",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "instance", "uploads", "holerites")
+    )
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
+
     # Configurações de Sessão e Proteção CSRF
     WTF_CSRF_ENABLED = True
     WTF_CSRF_SECRET_KEY = os.environ.get("WTF_CSRF_SECRET_KEY", SECRET_KEY)

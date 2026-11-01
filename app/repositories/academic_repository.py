@@ -257,6 +257,25 @@ class AcademicRepository:
             return mock_db.professores
 
     @staticmethod
+    def get_professor_by_id(id_professor):
+        """Busca os dados de um professor pelo seu id_professor."""
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = """
+                        SELECT id_professor, matricula, cpf, nome, email, numero
+                        FROM professor
+                        WHERE id_professor = %s
+                    """
+                    cursor.execute(query, (id_professor,))
+                    return cursor.fetchone()
+            finally:
+                conn.close()
+        except Exception:
+            return next((p for p in mock_db.professores if p["id_professor"] == id_professor), None)
+
+    @staticmethod
     def list_responsaveis():
         try:
             conn = get_db_connection()

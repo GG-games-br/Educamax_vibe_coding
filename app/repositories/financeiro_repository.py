@@ -151,9 +151,155 @@ class FinanceiroRepository:
                     return True
             return False
 
-    # --- FOLHA DE PAGAMENTO (SALÁRIOS SIMULADOS) ---
+    # --- HOLERITES EM PDF (06-folha-pagamento-pdf.md) ---
     @staticmethod
-    def create_folha_pagamento(id_professor, id_funcionario, mes_referencia, ano_referencia, valor):
+    def create_holerite(id_professor, mes_referencia, ano_referencia, nome_original, nome_armazenado, tamanho_bytes, id_funcionario_envio):
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = """
+                        INSERT INTO holerite_pdf 
+                            (id_professor, mes_referencia, ano_referencia, nome_original, nome_armazenado, tamanho_bytes, id_funcionario_envio)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """
+                    cursor.execute(query, (id_professor, mes_referencia, ano_referencia, nome_original, nome_armazenado, tamanho_bytes, id_funcionario_envio))
+                conn.commit()
+                return cursor.lastrowid
+            finally:
+                conn.close()
+        except Exception:
+            novo_id = max([h["id_holerite"] for h in mock_db.holerites] + [0]) + 1
+            prof = next((p for p in mock_db.professores if p["id_professor"] == id_professor), None)
+            mock_db.holerites.insert(0, {
+                "id_holerite": novo_id,
+                "id_professor": id_professor,
+                "mes_referencia": mes_referencia,
+                "ano_referencia": ano_referencia,
+                "nome_original": nome_original,
+                "nome_armazenado": nome_armazenado,
+                "tamanho_bytes": tamanho_bytes,
+                "id_funcionario_envio": id_funcionario_envio,
+                "data_envio": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "nome_professor": prof["nome"] if prof else f"Professor {id_professor}",
+                "matricula_professor": prof.get("matricula") if prof else None
+            })
+            return novo_id
+
+    @staticmethod
+    def get_holerite_by_id(id_holerite):
+        """Busca um holerite pelo seu ID com dados do professor associado."""
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = """
+                        SELECT 
+                            h.id_holerite, h.id_professor, h.mes_referencia, h.ano_referencia,
+                            h.nome_original, h.nome_armazenado, h.tamanho_bytes,
+                            h.id_funcionario_envio, h.data_envio,
+                            p.nome AS nome_professor, p.matricula AS matricula_professor
+                        FROM holerite_pdf h
+                        JOIN professor p ON h.id_professor = p.id_professor
+                        WHERE h.id_holerite = %s
+                    """
+                    cursor.execute(query, (id_holerite,))
+                    return cursor.fetchone()
+            finally:
+                conn.close()
+        except Exception:
+            return next((h for h in mock_db.holerites if h["id_holerite"] == id_holerite), None)
+
+    @staticmethod
+    def get_holerite_by_competencia(id_professor, mes_referencia, ano_referencia):
+        """Verifica se já existe holerite para o professor na competência (mês/ano)."""
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = """
+                        SELECT id_holerite, id_professor, mes_referencia, ano_referencia, nome_armazenado
+                        FROM holerite_pdf
+                        WHERE id_professor = %s AND mes_referencia = %s AND ano_referencia = %s
+                        LIMIT 1
+                    """
+                    cursor.execute(query, (id_professor, mes_referencia, ano_referencia))
+                    return cursor.fetchone()
+            finally:
+                conn.close()
+        except Exception:
+            return next((h for h in mock_db.holerites
+                         if h["id_professor"] == id_professor
+                         and h["mes_referencia"] == mes_referencia
+                         and h["ano_referencia"] == ano_referencia), None)
+
+    @staticmethod
+    def list_all_holerites():
+        """Lista todos os holerites enviados (visão administrativa)."""
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = """
+                        SELECT 
+                            h.id_holerite, h.id_professor, h.mes_referencia, h.ano_referencia,
+                            h.nome_original, h.nome_armazenado, h.tamanho_bytes,
+                            h.id_funcionario_envio, h.data_envio,
+                            p.nome AS nome_professor, p.matricula AS matricula_professor
+                        FROM holerite_pdf h
+                        JOIN professor p ON h.id_professor = p.id_professor
+                        ORDER BY h.ano_referencia DESC, h.mes_referencia DESC, h.id_holerite DESC
+                    """
+                    cursor.execute(query)
+                    return cursor.fetchall()
+            finally:
+                conn.close()
+        except Exception:
+            return mock_db.holerites
+
+    @staticmethod
+    def list_holerites_by_professor(id_professor):
+        """Retorna apenas os holerites do professor informado."""
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = """
+                        SELECT 
+                            h.id_holerite, h.id_professor, h.mes_referencia, h.ano_referencia,
+                            h.nome_original, h.nome_armazenado, h.tamanho_bytes,
+                            h.id_funcionario_envio, h.data_envio,
+                            p.nome AS nome_professor
+                        FROM holerite_pdf h
+                        JOIN professor p ON h.id_professor = p.id_professor
+                        WHERE h.id_professor = %s
+                        ORDER BY h.ano_referencia DESC, h.mes_referencia DESC
+                    """
+                    cursor.execute(query, (id_professor,))
+                    return cursor.fetchall()
+            finally:
+                conn.close()
+        except Exception:
+            return [h for h in mock_db.holerites if h["id_professor"] == id_professor]
+
+    @staticmethod
+    def delete_holerite(id_holerite):
+        """Exclui o registro de holerite do banco de dados."""
+        try:
+            conn = get_db_connection()
+            try:
+                with conn.cursor() as cursor:
+                    query = "DELETE FROM holerite_pdf WHERE id_holerite = %s"
+                    cursor.execute(query, (id_holerite,))
+                conn.commit()
+                return True
+            finally:
+                conn.close()
+        except Exception:
+            mock_db.holerites[:] = [h for h in mock_db.holerites if h["id_holerite"] != id_holerite]
+            return True
+
+
         try:
             conn = get_db_connection()
             try:
