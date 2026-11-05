@@ -6,8 +6,8 @@
 <div class="card">
     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div>
-            <h1 class="card-title">Emissão & Controle de Boletos Fictícios</h1>
-            <p class="card-subtitle">Cobrança de mensalidades e taxas escolares com valor demonstrativo</p>
+            <h1 class="card-title">Emissão & Controle de Cobranças (Boleto & PIX)</h1>
+            <p class="card-subtitle">Cobrança simulada de mensalidades e taxas escolares com suporte a Boleto Bancário e PIX Instantâneo</p>
         </div>
         <a href="{{ url_for('financeiro.painel') }}" class="btn btn-secondary btn-sm">&larr; Voltar ao Painel Financeiro</a>
     </div>
@@ -123,22 +123,27 @@
                             <td>{{ b.data_vencimento }}</td>
                             <td>
                                 {% if b.status == 'pago' %}
-                                    <span class="badge-status badge-ativo">Pago</span>
+                                    <span class="badge-status badge-ativo">
+                                        Pago {% if b.metodo_pagamento %}({{ b.metodo_pagamento|upper }}){% endif %}
+                                    </span>
                                 {% else %}
                                     <span class="badge-status badge-pendente">Pendente</span>
                                 {% endif %}
                             </td>
                             <td>{{ b.data_pagamento or '—' }}</td>
                             <td style="text-align: right;">
-                                <div style="display: inline-flex; gap: 6px;">
-                                    <a href="{{ url_for('financeiro.visualizar_boleto', id_boleto=b.id_boleto) }}" class="btn btn-secondary btn-sm" target="_blank">
+                                <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                    <a href="{{ url_for('financeiro.visualizar_boleto', id_boleto=b.id_boleto) }}" class="btn btn-secondary btn-sm" target="_blank" title="Abrir visualização de Boleto e PIX">
                                         Visualizar
                                     </a>
                                     {% if b.status != 'pago' %}
-                                        <form method="POST" action="{{ url_for('financeiro.pagar_boleto', id_boleto=b.id_boleto) }}" style="display: inline;">
+                                        <form method="POST" action="{{ url_for('financeiro.pagar_boleto', id_boleto=b.id_boleto) }}" style="display: inline-flex; gap: 4px;">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-success btn-sm">
-                                                Simular Pagamento
+                                            <button type="submit" name="metodo" value="pix" class="btn btn-success btn-sm" style="background: #059669; border-color: #059669;" title="Simular pagamento imediato via PIX">
+                                                ⚡ PIX
+                                            </button>
+                                            <button type="submit" name="metodo" value="boleto" class="btn btn-primary btn-sm" title="Simular pagamento de boleto">
+                                                📄 Boleto
                                             </button>
                                         </form>
                                     {% endif %}

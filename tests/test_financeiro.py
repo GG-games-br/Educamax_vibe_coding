@@ -21,6 +21,40 @@ class TestFinanceiroSimulado(unittest.TestCase):
         self.assertIn("00190.", linha)
         self.assertIn("0000035050", linha)
 
+    def test_gerar_dados_pix_ficticio(self):
+        """Verifica se os dados simulados do PIX são gerados corretamente."""
+        pix_data = FinanceiroService.gerar_dados_pix_ficticio(25, 600.00)
+        self.assertEqual(pix_data["chave"], "pix.financeiro@educamax.escola.br")
+        self.assertIn("COB00025", pix_data["copia_cola"])
+        self.assertIn("br.gov.bcb.pix", pix_data["copia_cola"])
+
+    @patch("app.repositories.financeiro_repository.FinanceiroRepository.get_boleto_by_id")
+    @patch("app.repositories.financeiro_repository.FinanceiroRepository.update_boleto_pagamento_simulado")
+    @patch("app.repositories.academic_repository.AcademicRepository.is_responsavel_of_aluno")
+    def test_responsavel_pagamento_simulado_pix_sucesso(self, mock_is_resp, mock_update, mock_get):
+        """Responsável consegue efetuar o pagamento simulado via PIX com sucesso."""
+        mock_get.return_value = {
+            "id_boleto": 20,
+            "matricula": 1001,
+            "valor": 650.00,
+            "status": "pendente"
+        }
+        mock_is_resp.return_value = True
+        mock_update.return_value = True
+
+        user_resp = User(
+            id_conta=1,
+            email="pai@escola.com",
+            perfil="responsavel",
+            id_perfil=5,
+            nome="Pai do Aluno"
+        )
+
+        ok, msg = FinanceiroService.pagar_boleto_simulado(20, user_resp, metodo="pix")
+        self.assertTrue(ok)
+        self.assertIn("PIX", msg)
+        mock_update.assert_called_once_with(20, metodo="pix")
+
     @patch("app.repositories.financeiro_repository.FinanceiroRepository.get_boleto_by_id")
     @patch("app.repositories.financeiro_repository.FinanceiroRepository.update_boleto_pagamento_simulado")
     @patch("app.repositories.academic_repository.AcademicRepository.is_responsavel_of_aluno")

@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS boleto (
     status ENUM('pendente', 'pago') NOT NULL DEFAULT 'pendente',
     data_vencimento DATE NOT NULL,
     data_pagamento DATETIME,
+    metodo_pagamento VARCHAR(20) DEFAULT 'boleto',
 
     CONSTRAINT fk_boleto_aluno
         FOREIGN KEY (matricula)

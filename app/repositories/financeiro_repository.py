@@ -124,21 +124,29 @@ class FinanceiroRepository:
             return [b for b in mock_db.boletos if b["matricula"] in matriculas_resp]
 
     @staticmethod
-    def update_boleto_pagamento_simulado(id_boleto):
+    def update_boleto_pagamento_simulado(id_boleto, metodo="boleto"):
         """
-        Simula a quitação do boleto: apenas altera o status para 'pago'
-        e grava a data_pagamento com o momento atual.
+        Simula a quitação do boleto/cobrança: apenas altera o status para 'pago',
+        grava a data_pagamento com o momento atual e armazena o método utilizado (boleto ou pix).
         """
         try:
             conn = get_db_connection()
             try:
                 with conn.cursor() as cursor:
-                    query = """
-                        UPDATE boleto
-                        SET status = 'pago', data_pagamento = NOW()
-                        WHERE id_boleto = %s
-                    """
-                    cursor.execute(query, (id_boleto,))
+                    try:
+                        query = """
+                            UPDATE boleto
+                            SET status = 'pago', data_pagamento = NOW(), metodo_pagamento = %s
+                            WHERE id_boleto = %s
+                        """
+                        cursor.execute(query, (metodo, id_boleto))
+                    except Exception:
+                        query = """
+                            UPDATE boleto
+                            SET status = 'pago', data_pagamento = NOW()
+                            WHERE id_boleto = %s
+                        """
+                        cursor.execute(query, (id_boleto,))
                 conn.commit()
                 return True
             finally:
@@ -148,6 +156,7 @@ class FinanceiroRepository:
                 if b["id_boleto"] == id_boleto:
                     b["status"] = "pago"
                     b["data_pagamento"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    b["metodo_pagamento"] = metodo
                     return True
             return False
 

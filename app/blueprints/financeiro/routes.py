@@ -160,8 +160,9 @@ def visualizar_boleto(id_boleto):
 @financeiro_bp.route("/boleto/<int:id_boleto>/pagar", methods=["POST"])
 @login_required
 def pagar_boleto(id_boleto):
-    """Ação fictícia de pagamento de boleto."""
-    success, msg = FinanceiroService.pagar_boleto_simulado(id_boleto, current_user)
+    """Ação fictícia de pagamento de boleto ou PIX."""
+    metodo = request.form.get("metodo", "boleto")
+    success, msg = FinanceiroService.pagar_boleto_simulado(id_boleto, current_user, metodo=metodo)
     if success:
         flash(msg, "success")
     else:

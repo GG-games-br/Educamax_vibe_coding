@@ -20,6 +20,29 @@ class FinanceiroService:
         bloco5 = val_str
         return f"{bloco1} {bloco2} {bloco3} {bloco4} {bloco5}"
 
+    @staticmethod
+    def gerar_dados_pix_ficticio(id_boleto, valor):
+        """
+        Gera dados visuais e fictícios de pagamento via PIX para ambiente de demonstração.
+        100% simulado (04-financeiro-simulado.md).
+        """
+        chave_pix = "pix.financeiro@educamax.escola.br"
+        val_float = float(valor)
+        # Código EMV fictício representativo para Copia e Cola
+        copia_cola = (
+            f"00020126580014br.gov.bcb.pix0136{chave_pix}"
+            f"52040000530398654{val_float:.2f}5802BR5920EDUCAMAX COLEGIO LTDA"
+            f"6009SAO PAULO62140510COB{id_boleto:05d}6304DEMO"
+        )
+        return {
+            "chave": chave_pix,
+            "tipo_chave": "E-mail Institucional",
+            "beneficiario": "Colégio EducaMax Ensino Básico Ltda.",
+            "cidade": "São Paulo - SP",
+            "copia_cola": copia_cola,
+            "txid": f"COB{id_boleto:05d}DEMO"
+        }
+
     # --- BOLETOS ---
     @classmethod
     def emitir_boleto_individual(cls, matricula, tipo, valor, data_vencimento, id_requisicao=None):
@@ -70,12 +93,13 @@ class FinanceiroService:
         boleto = FinanceiroRepository.get_boleto_by_id(id_boleto)
         if boleto:
             boleto["linha_digitavel"] = cls.gerar_linha_digitavel_ficticia(boleto["id_boleto"], boleto["valor"])
+            boleto["pix"] = cls.gerar_dados_pix_ficticio(boleto["id_boleto"], boleto["valor"])
         return boleto
 
     @classmethod
-    def pagar_boleto_simulado(cls, id_boleto, user):
+    def pagar_boleto_simulado(cls, id_boleto, user, metodo="boleto"):
         """
-        Simula a quitação do boleto.
+        Simula a quitação do boleto/cobrança (via Boleto Bancário ou PIX).
         Verifica se o usuário é o responsável pelo aluno ou administrador.
         """
         boleto = FinanceiroRepository.get_boleto_by_id(id_boleto)
@@ -93,8 +117,12 @@ class FinanceiroService:
                 return False, "Você não tem permissão para pagar o boleto deste aluno."
 
         try:
-            FinanceiroRepository.update_boleto_pagamento_simulado(id_boleto)
-            return True, "Pagamento simulado registrado com sucesso! O status foi alterado para 'Pago'."
+            if metodo and metodo.lower() == "pix":
+                FinanceiroRepository.update_boleto_pagamento_simulado(id_boleto, metodo="pix")
+                return True, "Pagamento simulado via PIX registrado com sucesso! O status foi alterado para 'Pago'."
+            else:
+                FinanceiroRepository.update_boleto_pagamento_simulado(id_boleto)
+                return True, "Pagamento simulado registrado com sucesso! O status foi alterado para 'Pago'."
         except Exception as e:
             return False, f"Erro ao registrar pagamento simulado: {str(e)}"
 
