@@ -30,11 +30,6 @@
         <nav>
             <ul class="nav-links">
                 {% if current_user.is_authenticated %}
-                    <li>
-                        <span class="badge-status badge-perfil">
-                            {{ current_user.perfil|upper }}{% if current_user.is_admin %} (ADMIN){% endif %}
-                        </span>
-                    </li>
                     <li><a href="{{ url_for('main.dashboard') }}" class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">Dashboard</a></li>
                     
                     {% if current_user.is_admin %}
@@ -58,7 +53,57 @@
                         {% endif %}
                     {% endif %}
 
-                    <li><a href="{{ url_for('auth.logout') }}" class="nav-link nav-link-logout">Sair ({{ current_user.nome.split()[0] }})</a></li>
+                    <!-- Painel Dropdown do Usuário -->
+                    <li class="nav-user-dropdown-container">
+                        <button id="userDropdownBtn" class="nav-link nav-user-btn" type="button" aria-expanded="false" aria-haspopup="true">
+                            <span class="user-avatar-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <span class="nav-user-name" title="{{ current_user.nome }}">{{ current_user.nome }}</span>
+                            <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+
+                        <div id="userDropdownMenu" class="user-dropdown-menu">
+                            <div class="user-dropdown-header">
+                                <div class="user-dropdown-title">{{ current_user.nome }}</div>
+                                <div class="user-dropdown-email">{{ current_user.email }}</div>
+                            </div>
+                            <div class="user-dropdown-details">
+                                <div class="dropdown-detail-row">
+                                    <span class="dropdown-label">Cargo / Perfil</span>
+                                    <span class="badge-status badge-perfil">
+                                        {% if current_user.cargo_nome %}
+                                            {{ current_user.cargo_nome }}
+                                        {% elif current_user.is_admin %}
+                                            ADMINISTRADOR
+                                        {% else %}
+                                            {{ current_user.perfil|upper }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="dropdown-detail-row">
+                                    <span class="dropdown-label">Status da Conta</span>
+                                    <span class="badge-status badge-{{ 'ativo' if current_user.status_conta == 'ativo' else 'pendente' }}">
+                                        {{ current_user.status_conta|upper }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="{{ url_for('auth.logout') }}" class="dropdown-item-logout">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Sair</span>
+                            </a>
+                        </div>
+                    </li>
                 {% else %}
                     <li><a href="{{ url_for('auth.login') }}" class="nav-link {% if request.endpoint == 'auth.login' %}active{% endif %}">Entrar</a></li>
                     <li><a href="{{ url_for('auth.cadastro_hub') }}" class="btn btn-primary btn-sm">Criar Conta</a></li>
@@ -91,5 +136,35 @@
     </footer>
 
     {% block extra_js %}{% endblock %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.getElementById('userDropdownBtn');
+            const dropdownContainer = document.querySelector('.nav-user-dropdown-container');
+
+            if (dropdownBtn && dropdownContainer) {
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = dropdownContainer.classList.toggle('open');
+                    dropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!dropdownContainer.contains(e.target)) {
+                        dropdownContainer.classList.remove('open');
+                        dropdownBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && dropdownContainer.classList.contains('open')) {
+                        dropdownContainer.classList.remove('open');
+                        dropdownBtn.setAttribute('aria-expanded', 'false');
+                        dropdownBtn.focus();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
