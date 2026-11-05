@@ -71,13 +71,14 @@ body {
 .navbar {
     background-color: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
-    padding: 14px 24px;
+    padding: 10px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .navbar-brand {
@@ -97,23 +98,61 @@ body {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 6px;
     list-style: none;
 }
 
 .nav-link {
-    color: var(--text-muted);
+    color: #475569;
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
     font-weight: 500;
-    transition: color 0.15s ease;
-    padding: 6px 10px;
-    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm) var(--radius-sm) 2px 2px;
+    border-bottom: 3px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .nav-link:hover {
     color: var(--primary);
-    background-color: var(--primary-light);
+    background-color: rgba(30, 64, 175, 0.06);
+    border-bottom-color: rgba(30, 64, 175, 0.45);
+}
+
+/* Aba Selecionada / Ativa */
+.nav-link.active {
+    color: var(--primary);
+    font-weight: 600;
+    background-color: rgba(30, 64, 175, 0.1);
+    border-bottom-color: var(--primary);
+}
+
+/* Link de Logout com estilo próprio */
+.nav-link.nav-link-logout {
+    color: var(--danger);
+    border-bottom: 3px solid transparent;
+}
+
+.nav-link.nav-link-logout:hover {
+    color: #991b1b;
+    background-color: var(--danger-bg);
+    border-bottom-color: var(--danger);
+}
+
+@media (max-width: 900px) {
+    .navbar {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 10px 16px;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
 }
 
 /* Container Principal */
