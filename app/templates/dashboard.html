@@ -13,9 +13,6 @@
             <span class="badge-status badge-perfil" style="font-size: 0.85rem; padding: 6px 14px;">
                 Perfil: {{ current_user.perfil|upper }}
             </span>
-            <span class="badge-status badge-ativo" style="font-size: 0.85rem; padding: 6px 14px;">
-                Status: {{ current_user.status_conta|upper }}
-            </span>
         </div>
     </div>
 
@@ -26,10 +23,6 @@
             {% if current_user.matricula %}
                 <div><strong>Matrícula:</strong> {{ current_user.matricula }}</div>
             {% endif %}
-            {% if current_user.cargo_nome %}
-                <div><strong>Cargo:</strong> {{ current_user.cargo_nome }}</div>
-            {% endif %}
-            <div><strong>ID da Conta:</strong> #{{ current_user.id_conta }}</div>
         </div>
     </div>
 

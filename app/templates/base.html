@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
     <!-- Faixa Informativa Obrigatória: Simulação Financeira -->
@@ -15,9 +17,9 @@
         <span>
             {{ simulado_aviso }} — Nenhuma movimentação bancária real é executada.
             {% if offline_mode %}
-                <strong style="margin-left: 8px; background: rgba(0,0,0,0.18); padding: 3px 8px; border-radius: 4px;">
-                    ⚡ Modo Demonstração Offline Ativo (Navegando sem MySQL)
-                </strong>
+            <strong style="margin-left: 8px; background: rgba(0,0,0,0.18); padding: 3px 8px; border-radius: 4px;">
+                ⚡ Modo Demonstração Offline Ativo (Navegando sem MySQL)
+            </strong>
             {% endif %}
         </span>
     </div>
@@ -30,83 +32,110 @@
         <nav>
             <ul class="nav-links">
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('main.dashboard') }}" class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">Dashboard</a></li>
-                    
-                    {% if current_user.is_admin %}
-                        <li><a href="{{ url_for('admin.academico_hub') }}" class="nav-link {% if request.blueprint == 'admin' %}active{% endif %}">Acadêmico</a></li>
-                        <li><a href="{{ url_for('financeiro.painel') }}" class="nav-link {% if request.blueprint == 'financeiro' %}active{% endif %}">Financeiro</a></li>
-                        <li><a href="{{ url_for('requisicoes.gerenciar') }}" class="nav-link {% if request.blueprint == 'requisicoes' %}active{% endif %}">Requisições</a></li>
-                        <li><a href="{{ url_for('notas.painel_lancamento') }}" class="nav-link {% if request.blueprint == 'notas' %}active{% endif %}">Notas</a></li>
-                        <li><a href="{{ url_for('auth.contas_pendentes') }}" class="nav-link {% if request.endpoint == 'auth.contas_pendentes' %}active{% endif %}">Aprovar Contas</a></li>
-                    {% elif current_user.perfil == 'professor' %}
-                        <li><a href="{{ url_for('professor.minhas_turmas') }}" class="nav-link {% if request.blueprint == 'professor' %}active{% endif %}">Minhas Turmas</a></li>
-                        <li><a href="{{ url_for('notas.painel_lancamento') }}" class="nav-link {% if request.blueprint == 'notas' %}active{% endif %}">Lançar Notas</a></li>
-                        <li><a href="{{ url_for('financeiro.meu_salario') }}" class="nav-link {% if request.blueprint == 'financeiro' %}active{% endif %}">Meu Salário</a></li>
-                    {% elif current_user.perfil == 'responsavel' %}
-                        <li><a href="{{ url_for('responsavel.meus_dependentes') }}" class="nav-link {% if request.blueprint == 'responsavel' %}active{% endif %}">Dependentes</a></li>
-                        <li><a href="{{ url_for('requisicoes.minhas_requisicoes') }}" class="nav-link {% if request.blueprint == 'requisicoes' %}active{% endif %}">Requisições</a></li>
-                        <li><a href="{{ url_for('financeiro.meus_boletos') }}" class="nav-link {% if request.blueprint == 'financeiro' %}active{% endif %}">Boletos</a></li>
-                    {% elif current_user.perfil == 'aluno' %}
-                        <li><a href="{{ url_for('aluno.meu_perfil') }}" class="nav-link {% if request.blueprint == 'aluno' %}active{% endif %}">Meu Espaço</a></li>
-                        {% if current_user.matricula %}
-                            <li><a href="{{ url_for('notas.ver_boletim', matricula=current_user.matricula) }}" class="nav-link {% if request.blueprint == 'notas' %}active{% endif %}">Boletim</a></li>
-                        {% endif %}
-                    {% endif %}
+                <li><a href="{{ url_for('main.dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">Dashboard</a>
+                </li>
 
-                    <!-- Painel Dropdown do Usuário -->
-                    <li class="nav-user-dropdown-container">
-                        <button id="userDropdownBtn" class="nav-link nav-user-btn" type="button" aria-expanded="false" aria-haspopup="true">
-                            <span class="user-avatar-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </span>
-                            <span class="nav-user-name" title="{{ current_user.nome }}">{{ current_user.nome }}</span>
-                            <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
+                {% if current_user.is_admin %}
+                <li><a href="{{ url_for('admin.academico_hub') }}"
+                        class="nav-link {% if request.blueprint == 'admin' %}active{% endif %}">Acadêmico</a></li>
+                <li><a href="{{ url_for('financeiro.painel') }}"
+                        class="nav-link {% if request.blueprint == 'financeiro' %}active{% endif %}">Financeiro</a></li>
+                <li><a href="{{ url_for('requisicoes.gerenciar') }}"
+                        class="nav-link {% if request.blueprint == 'requisicoes' %}active{% endif %}">Requisições</a>
+                </li>
+                <li><a href="{{ url_for('notas.painel_lancamento') }}"
+                        class="nav-link {% if request.blueprint == 'notas' %}active{% endif %}">Notas</a></li>
+                <li><a href="{{ url_for('auth.contas_pendentes') }}"
+                        class="nav-link {% if request.endpoint == 'auth.contas_pendentes' %}active{% endif %}">Aprovar
+                        Contas</a></li>
+                {% elif current_user.perfil == 'professor' %}
+                <li><a href="{{ url_for('professor.minhas_turmas') }}"
+                        class="nav-link {% if request.blueprint == 'professor' %}active{% endif %}">Minhas Turmas</a>
+                </li>
+                <li><a href="{{ url_for('notas.painel_lancamento') }}"
+                        class="nav-link {% if request.blueprint == 'notas' %}active{% endif %}">Lançar Notas</a></li>
+                <li><a href="{{ url_for('financeiro.meu_salario') }}"
+                        class="nav-link {% if request.blueprint == 'financeiro' %}active{% endif %}">Meu Salário</a>
+                </li>
+                {% elif current_user.perfil == 'responsavel' %}
+                <li><a href="{{ url_for('responsavel.meus_dependentes') }}"
+                        class="nav-link {% if request.blueprint == 'responsavel' %}active{% endif %}">Dependentes</a>
+                </li>
+                <li><a href="{{ url_for('requisicoes.minhas_requisicoes') }}"
+                        class="nav-link {% if request.blueprint == 'requisicoes' %}active{% endif %}">Requisições</a>
+                </li>
+                <li><a href="{{ url_for('financeiro.meus_boletos') }}"
+                        class="nav-link {% if request.blueprint == 'financeiro' %}active{% endif %}">Boletos</a></li>
+                {% elif current_user.perfil == 'aluno' %}
+                <li><a href="{{ url_for('aluno.meu_perfil') }}"
+                        class="nav-link {% if request.blueprint == 'aluno' %}active{% endif %}">Meu Espaço</a></li>
+                {% if current_user.matricula %}
+                <li><a href="{{ url_for('notas.ver_boletim', matricula=current_user.matricula) }}"
+                        class="nav-link {% if request.blueprint == 'notas' %}active{% endif %}">Boletim</a></li>
+                {% endif %}
+                {% endif %}
+
+                <!-- Painel Dropdown do Usuário -->
+                <li class="nav-user-dropdown-container">
+                    <button id="userDropdownBtn" class="nav-link nav-user-btn" type="button" aria-expanded="false"
+                        aria-haspopup="true">
+                        <span class="user-avatar-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
                             </svg>
-                        </button>
+                        </span>
+                        <span class="nav-user-name" title="{{ current_user.nome }}">{{ current_user.nome }}</span>
+                        <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
 
-                        <div id="userDropdownMenu" class="user-dropdown-menu">
-                            <div class="user-dropdown-header">
-                                <div class="user-dropdown-title">{{ current_user.nome }}</div>
-                                <div class="user-dropdown-email">{{ current_user.email }}</div>
-                            </div>
-                            <div class="user-dropdown-details">
-                                <div class="dropdown-detail-row">
-                                    <span class="dropdown-label">Cargo / Perfil</span>
-                                    <span class="badge-status badge-perfil">
-                                        {% if current_user.cargo_nome %}
-                                            {{ current_user.cargo_nome }}
-                                        {% elif current_user.is_admin %}
-                                            ADMINISTRADOR
-                                        {% else %}
-                                            {{ current_user.perfil|upper }}
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                <div class="dropdown-detail-row">
-                                    <span class="dropdown-label">Status da Conta</span>
-                                    <span class="badge-status badge-{{ 'ativo' if current_user.status_conta == 'ativo' else 'pendente' }}">
-                                        {{ current_user.status_conta|upper }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="user-dropdown-divider"></div>
-                            <a href="{{ url_for('auth.logout') }}" class="dropdown-item-logout">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                                <span>Sair</span>
-                            </a>
+                    <div id="userDropdownMenu" class="user-dropdown-menu">
+                        <div class="user-dropdown-header">
+                            <div class="user-dropdown-title">{{ current_user.nome }}</div>
+                            <div class="user-dropdown-email">{{ current_user.email }}</div>
                         </div>
-                    </li>
+                        <div class="user-dropdown-details">
+                            <div class="dropdown-detail-row">
+                                <span class="dropdown-label">Cargo / Perfil</span>
+                                <span class="badge-status badge-perfil">
+                                    {% if current_user.cargo_nome %}
+                                    {{ current_user.cargo_nome }}
+                                    {% elif current_user.is_admin %}
+                                    ADMINISTRADOR
+                                    {% else %}
+                                    {{ current_user.perfil|upper }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="dropdown-detail-row">
+                                <span class="dropdown-label">Status da Conta</span>
+                                <span
+                                    class="badge-status badge-{{ 'ativo' if current_user.status_conta == 'ativo' else 'pendente' }}">
+                                    {{ current_user.status_conta|upper }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <a href="{{ url_for('auth.logout') }}" class="dropdown-item-logout">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>Sair</span>
+                        </a>
+                    </div>
+                </li>
                 {% else %}
-                    <li><a href="{{ url_for('auth.login') }}" class="nav-link {% if request.endpoint == 'auth.login' %}active{% endif %}">Entrar</a></li>
-                    <li><a href="{{ url_for('auth.cadastro_hub') }}" class="btn btn-primary btn-sm">Criar Conta</a></li>
+                <li><a href="{{ url_for('auth.login') }}"
+                        class="nav-link {% if request.endpoint == 'auth.login' %}active{% endif %}">Entrar</a></li>
+                <li><a href="{{ url_for('auth.cadastro_hub') }}" class="btn btn-primary btn-sm">Criar Conta</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -117,13 +146,13 @@
         <!-- Flash Messages -->
         <div class="flash-container">
             {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            <span>{{ message }}</span>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
             {% endwith %}
         </div>
 
@@ -138,25 +167,25 @@
     {% block extra_js %}{% endblock %}
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const dropdownBtn = document.getElementById('userDropdownBtn');
             const dropdownContainer = document.querySelector('.nav-user-dropdown-container');
 
             if (dropdownBtn && dropdownContainer) {
-                dropdownBtn.addEventListener('click', function(e) {
+                dropdownBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     const isOpen = dropdownContainer.classList.toggle('open');
                     dropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                 });
 
-                document.addEventListener('click', function(e) {
+                document.addEventListener('click', function (e) {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.remove('open');
                         dropdownBtn.setAttribute('aria-expanded', 'false');
                     }
                 });
 
-                document.addEventListener('keydown', function(e) {
+                document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape' && dropdownContainer.classList.contains('open')) {
                         dropdownContainer.classList.remove('open');
                         dropdownBtn.setAttribute('aria-expanded', 'false');
@@ -167,4 +196,5 @@
         });
     </script>
 </body>
+
 </html>
